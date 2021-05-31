@@ -1,0 +1,19 @@
+{
+  "name": "task-tracker",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "vite-plugin-windicss": "^0.16.7",
+    "vue": "^3.0.5",
+    "windicss": "^3.0.12"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.2.2",
+    "@vue/compiler-sfc": "^3.0.5",
+    "vite": "^2.3.4"
+  }
+}
