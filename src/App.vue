@@ -1,4 +1,12 @@
 <template>
+  <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank">
+    <img
+      src="/GitHub-Mark-32px.png"
+      alt="github link to task tracker"
+      :class="dir === 'rtl' ? 'right-1' : 'left-1'"
+      class="fixed top-1 cursor-pointer"
+    />
+  </a>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     v-if="dir === 'rtl'"
