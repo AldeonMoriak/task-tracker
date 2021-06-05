@@ -4,7 +4,7 @@
 set -e
 
 # build
-npm run build --base=/task-tracker
+npm run build --base=/task-tracker/
 
 # navigate into the build output directory
 cd dist
