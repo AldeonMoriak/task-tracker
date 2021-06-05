@@ -1,5 +1,5 @@
 <template>
-  <div v-if="tasks && tasks.length > 0" class="mt-4">
+  <div v-if="tasks && tasks.length > 0" class="mt-4 font-vazir">
     <transition-group name="list-complete" tag="p">
       <div
         v-for="(task, index) in tasks"

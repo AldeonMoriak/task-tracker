@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between mt-4 items-center">
+  <div class="flex justify-between mt-4 items-center font-vazir">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       class="h-6 w-6 text-pink-500 mt-4 cursor-pointer"
