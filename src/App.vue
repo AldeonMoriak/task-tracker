@@ -1,66 +1,4 @@
 <template>
-  <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank">
-    <img
-      src="/GitHub-Mark-32px.png"
-      alt="github link to task tracker"
-      :class="dir === 'rtl' ? 'right-1' : 'left-1'"
-      class="fixed top-1 cursor-pointer"
-    />
-  </a>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    v-if="dir === 'rtl'"
-    class="
-      h-8
-      w-8
-      fixed
-      left-1
-      top-1
-      cursor-pointer
-      bg-red-100
-      text-red-600
-      rounded-full
-      p-1
-    "
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    @click="dir = 'ltr'"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M14 5l7 7m0 0l-7 7m7-7H3"
-    />
-  </svg>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    v-if="dir === 'ltr'"
-    class="
-      h-8
-      w-8
-      fixed
-      right-1
-      top-1
-      cursor-pointer
-      bg-red-100
-      text-red-600
-      rounded-full
-      p-1
-    "
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    @click="dir = 'rtl'"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M10 19l-7-7m0 0l7-7m-7 7h18"
-    />
-  </svg>
   <div
     :dir="dir"
     class="
@@ -73,6 +11,68 @@
     "
     :class="tasksList.length < 10 ? 'h-screen' : 'h-full'"
   >
+  <div class="flex justify-between">
+    <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank" rel="noreferrer">
+      <img
+        src="/GitHub-Mark-32px.png"
+        alt="github link to task tracker"
+        :class="dir === 'rtl' ? 'right-1' : 'left-1'"
+        class="top-1 cursor-pointer"
+      />
+    </a>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      v-if="dir === 'rtl'"
+      class="
+        h-8
+        w-8
+        left-1
+        top-1
+        cursor-pointer
+        bg-red-100
+        text-red-600
+        rounded-full
+        p-1
+      "
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      @click="dir = 'ltr'"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M14 5l7 7m0 0l-7 7m7-7H3"
+      />
+    </svg>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      v-if="dir === 'ltr'"
+      class="
+        h-8
+        w-8
+        right-1
+        top-1
+        cursor-pointer
+        bg-red-100
+        text-red-600
+        rounded-full
+        p-1
+      "
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      @click="dir = 'rtl'"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+      />
+    </svg>
+  </div>
     <Header v-on:task-inserted="addTask" class="w-3/4 mx-auto" />
     <Tasks
       :tasks="tasksList"
@@ -81,6 +81,7 @@
       :isTicking="isTicking"
       v-on:task-clicked="taskCounter"
       v-on:delete-clicked="deleteHandler"
+      :direction="dir"
     />
   </div>
 </template>

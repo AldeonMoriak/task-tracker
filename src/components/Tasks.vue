@@ -53,6 +53,10 @@
       </div>
     </transition-group>
   </div>
+  <div v-else>
+    <div v-if="direction === 'rtl'" class="text-red-600 font-vazir text-xl lg:text-3xl font-bold text-center my-auto">تسکی که میخوای رو اضافه کن!</div>
+    <div v-else class="text-red-600 font-semibold text-xl lg:text-3xl text-center my-auto">Add a task!</div>
+  </div>
 </template>
 
 <script>
@@ -72,6 +76,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    direction: {
+      type: String,
+      default: 'rtl'
+    }
   },
   methods: {
     classNames(index) {
