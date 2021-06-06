@@ -89,7 +89,6 @@ export default {
           ? " bg-blue-100 ring-blue-200"
           : " bg-pink-100 ring-pink-200";
       classNames = classNames + background;
-      console.log(this.currentIndex, index);
       if (this.currentIndex === index && this.isTicking) {
         classNames = classNames + " ring-red-500";
       }

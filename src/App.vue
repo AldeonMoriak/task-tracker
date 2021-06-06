@@ -121,7 +121,6 @@ export default {
     taskCounter(index) {
       if (index === this.currentIndex) {
         this.isTicking = !this.isTicking;
-        console.log(index === this.currentIndex, this.isTicking);
       } else {
         this.isTicking = true;
       }

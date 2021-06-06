@@ -57,9 +57,6 @@ export default {
         this.$refs.taskInput.focus();
       }, 100);
     },
-    keyMonitor(event) {
-      console.log(event);
-    },
   },
 };
 </script>
