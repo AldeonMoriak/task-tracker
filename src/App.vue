@@ -5,76 +5,79 @@
       mx-auto
       max-w-screen-md
       text-center
-      h-screen
       border-t-4 border-blue-300
       bg-gray-100
     "
     :class="tasksList.length < 10 ? 'h-screen' : 'h-full'"
   >
-  <div class="flex justify-between">
-    <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank" rel="noreferrer">
-      <img
-        src="/github.png"
-        alt="github link to task tracker"
-        :class="dir === 'rtl' ? 'right-1' : 'left-1'"
-        class="top-1 cursor-pointer w-8 h-8"
-        width="64px"
-        height="64px"
-      />
-    </a>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      v-if="dir === 'rtl'"
-      class="
-        h-8
-        w-8
-        left-1
-        top-1
-        cursor-pointer
-        bg-red-100
-        text-red-600
-        rounded-full
-        p-1
-      "
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      @click="dir = 'ltr'"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M14 5l7 7m0 0l-7 7m7-7H3"
-      />
-    </svg>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      v-if="dir === 'ltr'"
-      class="
-        h-8
-        w-8
-        right-1
-        top-1
-        cursor-pointer
-        bg-red-100
-        text-red-600
-        rounded-full
-        p-1
-      "
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      @click="dir = 'rtl'"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M10 19l-7-7m0 0l7-7m-7 7h18"
-      />
-    </svg>
-  </div>
+    <div class="flex justify-between">
+      <a
+        href="https://github.com/AldeonMoriak/task-tracker"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <img
+          src="/github.png"
+          alt="github link to task tracker"
+          :class="dir === 'rtl' ? 'right-1' : 'left-1'"
+          class="top-1 cursor-pointer w-8 h-8"
+          width="64px"
+          height="64px"
+        />
+      </a>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        v-if="dir === 'rtl'"
+        class="
+          h-8
+          w-8
+          left-1
+          top-1
+          cursor-pointer
+          bg-red-100
+          text-red-600
+          rounded-full
+          p-1
+        "
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        @click="dir = 'ltr'"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        v-if="dir === 'ltr'"
+        class="
+          h-8
+          w-8
+          right-1
+          top-1
+          cursor-pointer
+          bg-red-100
+          text-red-600
+          rounded-full
+          p-1
+        "
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        @click="dir = 'rtl'"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+        />
+      </svg>
+    </div>
     <Header v-on:task-inserted="addTask" class="w-3/4 mx-auto" />
     <Tasks
       :tasks="tasksList"
@@ -153,6 +156,11 @@ export default {
     },
     deleteHandler(index) {
       this.tasksList.splice(index, 1);
+      if (this.currentIndex > index) this.currentIndex--;
+      else if (this.currentIndex == index) {
+        this.currentIndex = -1;
+        clearInterval(this.counterInterval);
+      }
       this.localStorageHandler();
     },
   },

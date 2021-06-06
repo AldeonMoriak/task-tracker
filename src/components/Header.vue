@@ -2,7 +2,25 @@
   <header class="flex justify-between mt-4 items-center font-vazir">
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      class="h-6 w-6 text-pink-500 mt-4 cursor-pointer"
+      class="
+        h-8
+        w-8
+        text-green-500
+        mt-4
+        cursor-pointer
+        bg-green-100
+        rounded-full
+        p-1
+        hover:(bg-green-200
+        text-green-600
+        -translate-y-1
+        scale-110)
+        animate-flip
+        transition
+        duration-500
+        ease-in-out
+        transform
+      "
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
