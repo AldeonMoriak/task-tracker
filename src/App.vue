@@ -18,6 +18,8 @@
         alt="github link to task tracker"
         :class="dir === 'rtl' ? 'right-1' : 'left-1'"
         class="top-1 cursor-pointer"
+        width="32 px"
+        height="32 px"
       />
     </a>
     <svg
