@@ -14,12 +14,12 @@
   <div class="flex justify-between">
     <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank" rel="noreferrer">
       <img
-        src="/GitHub-Mark-32px.png"
+        src="/github.png"
         alt="github link to task tracker"
         :class="dir === 'rtl' ? 'right-1' : 'left-1'"
-        class="top-1 cursor-pointer"
-        width="32 px"
-        height="32 px"
+        class="top-1 cursor-pointer w-8 h-8"
+        width="64px"
+        height="64px"
       />
     </a>
     <svg
