@@ -4,18 +4,8 @@
       <div
         v-for="(task, index) in tasks"
         :key="index"
-        class="
-          flex
-          justify-between
-          ring
-          p-4
-          rounded
-          mb-4
-          cursor-pointer
-          list-complete-item
-        "
+        class="flex justify-between ring p-4 rounded mb-4 list-complete-item"
         :class="classNames(index)"
-        @click="$emit('task-clicked', index)"
       >
         <span class="">
           {{ task.name }}
@@ -24,19 +14,35 @@
           <span>{{
             task.hours + ":" + task.minutes + ":" + task.seconds
           }}</span>
+          <div
+            @click="$emit('task-clicked', index)"
+            class="flex justify-between"
+          >
+            <svg
+              v-if="!isTicking || currentIndex != index"
+              class="h-6 w-6 mx-5 text-green-600 bg-green-200 rounded-full hover:(bg-green-300 text-green-800) cursor-pointer"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 12.3301L9 16.6603L9 8L15 12.3301Z"
+                fill="currentColor"
+              />
+            </svg>
+            <svg
+              v-else
+              class="h-6 w-6 mx-5 text-pink-600 bg-pink-200 rounded-full hover:(bg-pink-300 text-pink-800) cursor-pointer"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M7 7H17V17H7V7Z" fill="currentColor" />
+            </svg>
+          </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="
-              h-6
-              w-6
-              p-1
-              mx-5
-              text-red-600
-              bg-red-200
-              rounded-full
-              hover:(bg-red-300
-              text-red-800)
-            "
+            class="h-6 w-6 p-1 text-red-600 bg-red-200 rounded-full hover:(bg-red-300 text-red-800) cursor-pointer"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -54,8 +60,18 @@
     </transition-group>
   </div>
   <div v-else>
-    <div v-if="direction === 'rtl'" class="text-red-600 font-vazir text-xl lg:text-3xl font-bold text-center my-auto">تسکی که میخوای رو اضافه کن!</div>
-    <div v-else class="text-red-600 font-semibold text-xl lg:text-3xl text-center my-auto">Add a task!</div>
+    <div
+      v-if="direction === 'rtl'"
+      class="text-red-600 font-vazir text-xl lg:text-3xl font-bold text-center my-auto"
+    >
+      تسکی که میخوای رو اضافه کن!
+    </div>
+    <div
+      v-else
+      class="text-red-600 font-semibold text-xl lg:text-3xl text-center my-auto"
+    >
+      Add a task!
+    </div>
   </div>
 </template>
 
@@ -78,8 +94,8 @@ export default {
     },
     direction: {
       type: String,
-      default: 'rtl'
-    }
+      default: "rtl",
+    },
   },
   methods: {
     classNames(index) {

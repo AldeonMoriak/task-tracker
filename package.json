@@ -9,7 +9,7 @@
   "dependencies": {
     "vite-plugin-windicss": "^0.16.7",
     "vue": "^3.0.5",
-    "windicss": "^3.0.12"
+    "windicss": "^3.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.2.2",
