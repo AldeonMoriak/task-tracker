@@ -1,7 +1,13 @@
 <template>
   <div
     :dir="dir"
-    class="mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-gray-100"
+    class="
+      mx-auto
+      max-w-screen-md
+      text-center
+      border-t-4 border-blue-300
+      bg-gray-100
+    "
     :class="tasksList.length < 10 ? 'h-screen' : 'h-full'"
   >
     <div class="flex justify-between">
@@ -22,7 +28,17 @@
       <svg
         xmlns="http://www.w3.org/2000/svg"
         v-if="dir === 'rtl'"
-        class="h-8 w-8 left-1 top-1 cursor-pointer bg-red-100 text-red-600 rounded-full p-1"
+        class="
+          h-8
+          w-8
+          left-1
+          top-1
+          cursor-pointer
+          bg-red-100
+          text-red-600
+          rounded-full
+          p-1
+        "
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -38,7 +54,17 @@
       <svg
         xmlns="http://www.w3.org/2000/svg"
         v-if="dir === 'ltr'"
-        class="h-8 w-8 right-1 top-1 cursor-pointer bg-red-100 text-red-600 rounded-full p-1"
+        class="
+          h-8
+          w-8
+          right-1
+          top-1
+          cursor-pointer
+          bg-red-100
+          text-red-600
+          rounded-full
+          p-1
+        "
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -92,6 +118,9 @@ export default {
   },
   methods: {
     addTask(value) {
+      if (!value || value.length < 1) {
+        return;
+      }
       this.tasksList.push({
         name: value,
         hours: "00",

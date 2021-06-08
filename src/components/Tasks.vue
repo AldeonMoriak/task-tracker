@@ -20,7 +20,17 @@
           >
             <svg
               v-if="!isTicking || currentIndex != index"
-              class="h-6 w-6 mx-5 text-green-600 bg-green-200 rounded-full hover:(bg-green-300 text-green-800) cursor-pointer"
+              class="
+                h-6
+                w-6
+                mx-5
+                text-green-600
+                bg-green-200
+                rounded-full
+                hover:(bg-green-300
+                text-green-800)
+                cursor-pointer
+              "
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +42,17 @@
             </svg>
             <svg
               v-else
-              class="h-6 w-6 mx-5 text-pink-600 bg-pink-200 rounded-full hover:(bg-pink-300 text-pink-800) cursor-pointer"
+              class="
+                h-6
+                w-6
+                mx-5
+                text-pink-600
+                bg-pink-200
+                rounded-full
+                hover:(bg-pink-300
+                text-pink-800)
+                cursor-pointer
+              "
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +62,17 @@
           </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 p-1 text-red-600 bg-red-200 rounded-full hover:(bg-red-300 text-red-800) cursor-pointer"
+            class="
+              h-6
+              w-6
+              p-1
+              text-red-600
+              bg-red-200
+              rounded-full
+              hover:(bg-red-300
+              text-red-800)
+              cursor-pointer
+            "
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -62,13 +92,21 @@
   <div v-else>
     <div
       v-if="direction === 'rtl'"
-      class="text-red-600 font-vazir text-xl lg:text-3xl font-bold text-center my-auto"
+      class="
+        text-red-500
+        font-vazir
+        text-xl
+        lg:text-3xl
+        font-bold
+        text-center
+        my-5
+      "
     >
       تسکی که میخوای رو اضافه کن!
     </div>
     <div
       v-else
-      class="text-red-600 font-semibold text-xl lg:text-3xl text-center my-auto"
+      class="text-red-500 font-semibold text-xl lg:text-3xl text-center my-5"
     >
       Add a task!
     </div>
