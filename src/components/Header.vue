@@ -17,6 +17,8 @@
           w-42
           sm:w-64
           top-4
+          bg-gray-50
+          px-2
         "
         @keypress.enter="insertTaskHandler"
       />

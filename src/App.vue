@@ -20,7 +20,7 @@
           src="/github.png"
           alt="github link to task tracker"
           :class="dir === 'rtl' ? 'right-1' : 'left-1'"
-          class="top-1 cursor-pointer w-8 h-8"
+          class="top-1 cursor-pointer w-8 h-8 opacity-50 hover:opacity-90 m-2"
           width="64px"
           height="64px"
         />
@@ -38,6 +38,9 @@
           text-red-600
           rounded-full
           p-1
+          m-2
+          hover:(bg-red-200
+          text-red-700)
         "
         fill="none"
         viewBox="0 0 24 24"
@@ -64,6 +67,9 @@
           text-red-600
           rounded-full
           p-1
+          m-2
+          hover:(bg-red-200
+          text-red-700)
         "
         fill="none"
         viewBox="0 0 24 24"

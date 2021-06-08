@@ -20,6 +20,7 @@
           >
             <svg
               v-if="!isTicking || currentIndex != index"
+              aria-label="play button"
               class="
                 h-6
                 w-6
@@ -30,6 +31,9 @@
                 hover:(bg-green-300
                 text-green-800)
                 cursor-pointer
+                transition
+                ease-in
+                duration-300
               "
               viewBox="0 0 24 24"
               fill="none"
@@ -42,7 +46,11 @@
             </svg>
             <svg
               v-else
+              aria-label="pause button"
               class="
+                transition
+                ease-in-out
+                duration-500
                 h-6
                 w-6
                 mx-5
@@ -57,7 +65,8 @@
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path d="M7 7H17V17H7V7Z" fill="currentColor" />
+              <path d="M11 7H8V17H11V7Z" fill="currentColor" />
+              <path d="M13 17H16V7H13V17Z" fill="currentColor" />
             </svg>
           </div>
           <svg
@@ -165,5 +174,17 @@ export default {
 
 .list-complete-leave-active {
   position: absolute;
+}
+</style>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
