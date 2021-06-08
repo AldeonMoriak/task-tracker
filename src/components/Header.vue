@@ -14,7 +14,8 @@
           focus:(ring
           ring-blue-300)
           rounded
-          w-64
+          w-42
+          sm:w-64
           top-4
         "
         @keypress.enter="insertTaskHandler"
