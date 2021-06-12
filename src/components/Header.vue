@@ -22,7 +22,7 @@
         "
         @keypress.enter="insertTaskHandler"
       />
-      <p class="-mx-5 text-gray-300 px-1">/</p>
+      <p class="-mx-5 text-gray-300 px-1" v-show="!isFocused">/</p>
     </div>
 
     <svg
@@ -80,15 +80,22 @@ export default {
     insertTaskHandler() {
       this.$emit("task-inserted", this.taskName);
       this.taskName = "";
+      this.unFocusInput();
     },
     keyListenerHandler(event) {
       if (event.code.toLowerCase() === "slash" && !this.isFocused) {
         event.preventDefault();
         this.focusInput();
+      } else if (event.code.toLowerCase() === "escape" && this.isFocused) {
+        event.preventDefault();
+        this.unFocusInput();
       }
     },
     focusInput() {
-      this.$refs.taskInput.focus();
+      if (this.$refs.taskInput) this.$refs.taskInput.focus();
+    },
+    unFocusInput() {
+      if (this.$refs.taskInput) this.$refs.taskInput.blur();
     },
   },
 };
