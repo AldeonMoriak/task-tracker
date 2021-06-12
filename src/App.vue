@@ -149,12 +149,31 @@ export default {
       if (this.isTicking) {
         this.counterInterval = setInterval(() => {
           +this.tasksList[index].seconds++;
+          this.tasksList[index].seconds = this.tasksList[
+            index
+          ].seconds.toLocaleString("en-US", {
+            minimumIntegerDigits: 2,
+            useGrouping: false,
+          });
           if (this.tasksList[index].seconds == 60) {
             this.tasksList[index].seconds = "00";
             this.tasksList[index].minutes++;
-            if (this.tasksList[index].minutes == 59) {
+            this.tasksList[index].minutes = this.tasksList[
+              index
+            ].minutes.toLocaleString("en-US", {
+              minimumIntegerDigits: 2,
+              useGrouping: false,
+            });
+            console.log(this.tasksList[index].minutes);
+            if (this.tasksList[index].minutes == 60) {
               this.tasksList[index].minutes = "00";
               +this.tasksList[index].hours++;
+              this.tasksList[index].hours = this.tasksList[
+                index
+              ].hours.toLocaleString("en-US", {
+                minimumIntegerDigits: 2,
+                useGrouping: false,
+              });
             }
           }
           this.localStorageHandler();
