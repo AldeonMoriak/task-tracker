@@ -73,6 +73,9 @@ export default {
       this.keyListenerHandler
     );
   },
+  unmounted() {
+    removeEventListener("keydown", this.keyboardEventListener);
+  },
   methods: {
     showToggleHandler() {
       this.focusInput();
@@ -84,6 +87,7 @@ export default {
     },
     keyListenerHandler(event) {
       if (event.code.toLowerCase() === "slash" && !this.isFocused) {
+        this.$emit("key-pressed", "slash");
         event.preventDefault();
         this.focusInput();
       } else if (event.code.toLowerCase() === "escape" && this.isFocused) {

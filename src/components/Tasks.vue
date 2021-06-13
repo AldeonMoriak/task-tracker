@@ -1,11 +1,13 @@
 <template>
   <div v-if="tasks && tasks.length > 0" class="mt-4 font-vazir">
-    <transition-group name="list-complete" tag="p">
+    <transition-group name="list-complete" tag="div">
       <div
         v-for="(task, index) in tasks"
+        :id="index"
         :key="index"
         class="flex justify-between ring p-4 rounded mb-4 list-complete-item"
         :class="classNames(index)"
+        @click="selectedTask = index"
       >
         <span class="">
           {{ task.name }}
@@ -14,10 +16,7 @@
           <span>{{
             task.hours + ":" + task.minutes + ":" + task.seconds
           }}</span>
-          <div
-            @click="$emit('task-clicked', index)"
-            class="flex justify-between"
-          >
+          <div @click="togglePlayHandler(index)" class="flex justify-between">
             <svg
               v-if="!isTicking || currentIndex != index"
               aria-label="play button"
@@ -124,6 +123,12 @@
 
 <script>
 export default {
+  data() {
+    return {
+      keyboardEventListener: null,
+      selectedTask: -1,
+    };
+  },
   props: {
     tasks: {
       type: Array,
@@ -144,18 +149,70 @@ export default {
       default: "rtl",
     },
   },
+  mounted() {
+    this.keyboardEventListener = addEventListener("keydown", this.keyListener);
+  },
+  unmounted() {
+    removeEventListener("keydown", this.keyboardEventListener);
+  },
   methods: {
     classNames(index) {
       let classNames = "";
-      const background =
-        index % 2 === 0
-          ? " bg-blue-100 ring-blue-200"
-          : " bg-pink-100 ring-pink-200";
+      const background = this.isTicking
+        ? " "
+        : index % 2 === 0
+        ? " bg-blue-100"
+        : " bg-pink-100";
       classNames = classNames + background;
       if (this.currentIndex === index && this.isTicking) {
-        classNames = classNames + " ring-red-500";
+        classNames = classNames + " ring-green-300 bg-green-100";
+      } else if (this.selectedTask === index) {
+        const selected = " ring-red-500";
+        classNames = classNames + selected;
+      } else {
+        const ringColor = index % 2 === 0 ? " ring-blue-200" : " ring-pink-200";
+        classNames = classNames + ringColor;
       }
       return classNames;
+    },
+    keyListener(event) {
+      if (event.code.toLowerCase() === "arrowdown") {
+        this.$emit("key-pressed", "arrowdown");
+        event.preventDefault();
+        this.moveHandler("down");
+      } else if (event.code.toLowerCase() === "arrowup") {
+        this.$emit("key-pressed", "arrowup");
+        event.preventDefault();
+        this.moveHandler("up");
+      } else if (
+        event.code.toLowerCase() === "space" &&
+        this.selectedTask !== -1
+      ) {
+        this.$emit("key-pressed", "space");
+        event.preventDefault();
+        this.togglePlayHandler(this.selectedTask);
+      } else if (event.code.toLowerCase() === "escape") {
+        this.$emit("key-pressed", "escape");
+        event.preventDefault();
+        this.selectedTask = -1;
+      }
+    },
+    moveHandler(direction) {
+      if (direction === "down") {
+        this.selectedTask++;
+        if (this.selectedTask > this.tasks.length - 1) {
+          this.selectedTask = 0;
+        }
+      } else if (direction === "up") {
+        this.selectedTask--;
+        if (this.selectedTask < 0) {
+          this.selectedTask = this.tasks.length - 1;
+        }
+      }
+      document.getElementById(this.selectedTask).scrollIntoView();
+    },
+    togglePlayHandler(index) {
+      this.$emit("task-clicked", index);
     },
   },
 };
@@ -173,18 +230,6 @@ export default {
 }
 
 .list-complete-leave-active {
-  position: absolute;
-}
-</style>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+  position: relative;
 }
 </style>
