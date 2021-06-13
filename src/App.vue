@@ -164,7 +164,6 @@ export default {
               minimumIntegerDigits: 2,
               useGrouping: false,
             });
-            console.log(this.tasksList[index].minutes);
             if (this.tasksList[index].minutes == 60) {
               this.tasksList[index].minutes = "00";
               +this.tasksList[index].hours++;

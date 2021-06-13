@@ -73,6 +73,9 @@ export default {
       this.keyListenerHandler
     );
   },
+  unmounted() {
+    removeEventListener("keydown", this.keyboardEventListener);
+  },
   methods: {
     showToggleHandler() {
       this.focusInput();

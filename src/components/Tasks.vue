@@ -124,6 +124,12 @@
 
 <script>
 export default {
+  data() {
+    return {
+      keyboardEventListener: null,
+      selectedTask: -1,
+    };
+  },
   props: {
     tasks: {
       type: Array,
@@ -144,18 +150,48 @@ export default {
       default: "rtl",
     },
   },
+  mounted() {
+    this.keyboardEventListener = addEventListener("keydown", this.keyListener);
+  },
+  unmounted() {
+    removeEventListener("keydown", this.keyboardEventListener);
+  },
   methods: {
     classNames(index) {
       let classNames = "";
+      const selected = this.selectedTask === index ? " ring-green-300" : "";
       const background =
         index % 2 === 0
           ? " bg-blue-100 ring-blue-200"
           : " bg-pink-100 ring-pink-200";
-      classNames = classNames + background;
+      classNames = classNames + selected + background;
       if (this.currentIndex === index && this.isTicking) {
         classNames = classNames + " ring-red-500";
       }
       return classNames;
+    },
+    keyListener(event) {
+      console.log(event.code);
+      if (event.code.toLowerCase() === "arrowdown") {
+        event.preventDefault();
+        this.moveHandler("down");
+      } else if (event.code.toLowerCase() === "arrowup") {
+        event.preventDefault();
+        this.moveHandler("up");
+      }
+    },
+    moveHandler(direction) {
+      if (direction === "down") {
+        this.selectedTask++;
+        if (this.selectedTask > this.tasks.length - 1) {
+          this.selectedTask = 0;
+        }
+      } else if (direction === "up") {
+        this.selectedTask--;
+        if (this.selectedTask < 0) {
+          this.selectedTask = this.tasks.length - 1;
+        }
+      }
     },
   },
 };
