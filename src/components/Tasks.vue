@@ -184,7 +184,10 @@ export default {
         this.$emit("key-pressed", "arrowup");
         event.preventDefault();
         this.moveHandler("up");
-      } else if (event.code.toLowerCase() === "space") {
+      } else if (
+        event.code.toLowerCase() === "space" &&
+        this.selectedTask !== -1
+      ) {
         this.$emit("key-pressed", "space");
         event.preventDefault();
         this.togglePlayHandler(this.selectedTask);
