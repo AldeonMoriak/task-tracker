@@ -1,0 +1,6 @@
+.tooltip {
+  @apply invisible fixed p-1 rounded border border-gray-200 bg-gray-100 shadow-lg ml-4 text-sm transition-opacity duration-200 bottom-10 text-gray-500;
+}
+.has-tooltip:hover .tooltip {
+  @apply visible z-50;
+}
