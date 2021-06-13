@@ -1,6 +1,6 @@
 <template>
   <div v-if="tasks && tasks.length > 0" class="mt-4 font-vazir">
-    <transition-group name="list-complete" tag="p">
+    <transition-group name="list-complete" tag="div">
       <div
         v-for="(task, index) in tasks"
         :id="index"
@@ -158,12 +158,16 @@ export default {
   methods: {
     classNames(index) {
       let classNames = "";
-      const background = index % 2 === 0 ? " bg-blue-100" : " bg-pink-100";
+      const background = this.isTicking
+        ? " "
+        : index % 2 === 0
+        ? " bg-blue-100"
+        : " bg-pink-100";
       classNames = classNames + background;
       if (this.currentIndex === index && this.isTicking) {
-        classNames = classNames + " ring-red-500";
+        classNames = classNames + " ring-green-300 bg-green-100";
       } else if (this.selectedTask === index) {
-        const selected = " ring-green-300";
+        const selected = " ring-red-500";
         classNames = classNames + selected;
       } else {
         const ringColor = index % 2 === 0 ? " ring-blue-200" : " ring-pink-200";
@@ -173,15 +177,22 @@ export default {
     },
     keyListener(event) {
       if (event.code.toLowerCase() === "arrowdown") {
+        this.$emit("key-pressed", "arrowdown");
         event.preventDefault();
         this.moveHandler("down");
       } else if (event.code.toLowerCase() === "arrowup") {
+        this.$emit("key-pressed", "arrowup");
         event.preventDefault();
         this.moveHandler("up");
       } else if (event.code.toLowerCase() === "space") {
+        this.$emit("key-pressed", "space");
         event.preventDefault();
         this.togglePlayHandler(this.selectedTask);
-      } else if (event.code.toLowerCase() === "escape") this.selectedTask = -1;
+      } else if (event.code.toLowerCase() === "escape") {
+        this.$emit("key-pressed", "escape");
+        event.preventDefault();
+        this.selectedTask = -1;
+      }
     },
     moveHandler(direction) {
       if (direction === "down") {
@@ -216,18 +227,6 @@ export default {
 }
 
 .list-complete-leave-active {
-  position: absolute;
-}
-</style>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+  position: relative;
 }
 </style>

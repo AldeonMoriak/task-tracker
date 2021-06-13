@@ -86,6 +86,7 @@ export default {
     },
     keyListenerHandler(event) {
       if (event.code.toLowerCase() === "slash" && !this.isFocused) {
+        this.$emit("key-pressed", "slash");
         event.preventDefault();
         this.focusInput();
       }

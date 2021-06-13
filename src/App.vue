@@ -88,6 +88,7 @@
       :direction="dir"
       v-on:task-inserted="addTask"
       class="w-3/4 mx-auto"
+      v-on:key-pressed="keyHandler"
     />
     <Tasks
       :tasks="tasksList"
@@ -97,17 +98,20 @@
       v-on:task-clicked="taskCounter"
       v-on:delete-clicked="deleteHandler"
       :direction="dir"
+      v-on:key-pressed="keyHandler"
     />
     <div class="fixed bottom-3 flex items-end mr-2">
       <div class="flex flex-col ml-2">
         <div class="has-tooltip">
           <svg
+            id="arrow-up"
             width="24"
             height="24"
             viewBox="0 0 24 24"
             fill="none"
-            class="text-gray-400 opacity-50 hover:opacity-100"
+            class="text-gray-600 opacity-50 hover:opacity-100"
             xmlns="http://www.w3.org/2000/svg"
+            :class="whichKeyIsPressed === 'arrowup' ? 'opacity-100' : ''"
           >
             <path
               d="M14.8543 11.9741L16.2686 10.5599L12.0259 6.31724L7.78327 10.5599L9.19749 11.9741L11.0259 10.1457V17.6828H13.0259V10.1457L14.8543 11.9741Z"
@@ -121,12 +125,14 @@
             />
           </svg>
           <svg
+            id="arrow-down"
             width="24"
             height="24"
             viewBox="0 0 24 24"
-            class="text-gray-400 opacity-50 hover:opacity-100"
+            class="text-gray-600 opacity-50 hover:opacity-100"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            :class="whichKeyIsPressed === 'arrowdown' ? 'opacity-100' : ''"
           >
             <path
               d="M14.8284 12.0259L16.2426 13.4402L12 17.6828L7.75733 13.4402L9.17155 12.0259L11 13.8544V6.31724H13V13.8544L14.8284 12.0259Z"
@@ -146,18 +152,20 @@
       </div>
       <div class="has-tooltip">
         <svg
+          id="space"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           class="
             w-16
             h-6
-            border-2 border-gray-400
+            border-2 border-gray-600
             rounded-md
             ml-2
-            text-gray-400
+            text-gray-600
             opacity-50
             hover:opacity-100
           "
+          :class="whichKeyIsPressed === 'space' ? 'opacity-100' : ''"
         >
           <path
             d="M21,9a1,1,0,0,0-1,1v3H4V10a1,1,0,0,0-2,0v4a1,1,0,0,0,1,1H21a1,1,0,0,0,1-1V10A1,1,0,0,0,21,9Z"
@@ -169,16 +177,18 @@
       </div>
       <div class="has-tooltip">
         <svg
+          id="slash"
           width="24"
           height="24"
           class="
-            border-2 border-gray-400
+            border-2 border-gray-600
             rounded-md
-            text-gray-400
+            text-gray-600
             opacity-50
             hover:opacity-100
             ml-2
           "
+          :class="whichKeyIsPressed === 'slash' ? 'opacity-100' : ''"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -218,10 +228,12 @@ export default {
       currentIndex: -1,
       isTicking: false,
       counterInterval: null,
+      whichKeyIsPressed: "",
     };
   },
   unmounted() {
     clearInterval(this.counterInterval);
+    this.timeoutWiper();
   },
   methods: {
     addTask(value) {
@@ -234,6 +246,7 @@ export default {
         minutes: "00",
         seconds: "00",
       });
+      this.localStorageHandler();
     },
     taskCounter(index) {
       if (index === this.currentIndex) {
@@ -295,9 +308,16 @@ export default {
       }
       this.localStorageHandler();
     },
+    keyHandler(key) {
+      this.timeoutWiper();
+      this.whichKeyIsPressed = key;
+      this.timer = setTimeout(() => {
+        this.whichKeyIsPressed = "";
+      }, 200);
+    },
+    timeoutWiper() {
+      clearTimeout(this.timer);
+    },
   },
 };
-
-// This starter template is using Vue 3 experimental <script setup> SFCs
-// Check out https://github.com/vuejs/rfcs/blob/script-setup-2/active-rfcs/0000-script-setup.md
 </script>
