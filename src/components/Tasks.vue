@@ -3,9 +3,11 @@
     <transition-group name="list-complete" tag="p">
       <div
         v-for="(task, index) in tasks"
+        :id="index"
         :key="index"
         class="flex justify-between ring p-4 rounded mb-4 list-complete-item"
         :class="classNames(index)"
+        @click="selectedTask = index"
       >
         <span class="">
           {{ task.name }}
@@ -14,10 +16,7 @@
           <span>{{
             task.hours + ":" + task.minutes + ":" + task.seconds
           }}</span>
-          <div
-            @click="$emit('task-clicked', index)"
-            class="flex justify-between"
-          >
+          <div @click="togglePlayHandler(index)" class="flex justify-between">
             <svg
               v-if="!isTicking || currentIndex != index"
               aria-label="play button"
@@ -159,26 +158,30 @@ export default {
   methods: {
     classNames(index) {
       let classNames = "";
-      const selected = this.selectedTask === index ? " ring-green-300" : "";
-      const background =
-        index % 2 === 0
-          ? " bg-blue-100 ring-blue-200"
-          : " bg-pink-100 ring-pink-200";
-      classNames = classNames + selected + background;
+      const background = index % 2 === 0 ? " bg-blue-100" : " bg-pink-100";
+      classNames = classNames + background;
       if (this.currentIndex === index && this.isTicking) {
         classNames = classNames + " ring-red-500";
+      } else if (this.selectedTask === index) {
+        const selected = " ring-green-300";
+        classNames = classNames + selected;
+      } else {
+        const ringColor = index % 2 === 0 ? " ring-blue-200" : " ring-pink-200";
+        classNames = classNames + ringColor;
       }
       return classNames;
     },
     keyListener(event) {
-      console.log(event.code);
       if (event.code.toLowerCase() === "arrowdown") {
         event.preventDefault();
         this.moveHandler("down");
       } else if (event.code.toLowerCase() === "arrowup") {
         event.preventDefault();
         this.moveHandler("up");
-      }
+      } else if (event.code.toLowerCase() === "space") {
+        event.preventDefault();
+        this.togglePlayHandler(this.selectedTask);
+      } else if (event.code.toLowerCase() === "escape") this.selectedTask = -1;
     },
     moveHandler(direction) {
       if (direction === "down") {
@@ -192,6 +195,10 @@ export default {
           this.selectedTask = this.tasks.length - 1;
         }
       }
+      document.getElementById(this.selectedTask).scrollIntoView();
+    },
+    togglePlayHandler(index) {
+      this.$emit("task-clicked", index);
     },
   },
 };
