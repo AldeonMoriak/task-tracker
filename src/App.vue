@@ -91,6 +91,11 @@
       v-on:key-pressed="keyHandler"
       v-on:is-focused="focusHandler"
     />
+    <div
+      class="bg-purple-200 text-xl w-1/3 mx-auto my-2 rounded p-2 font-vazir"
+    >
+      {{ (dir === "rtl" ? "زمان کلی:" : "Total Time:") + " " + totalTime }}
+    </div>
     <Tasks
       :tasks="tasksList"
       class="w-3/4 mx-auto pb-8"
@@ -237,6 +242,34 @@ export default {
   unmounted() {
     clearInterval(this.counterInterval);
     this.timeoutWiper();
+  },
+  computed: {
+    totalTime() {
+      let totalTime = 0;
+      this.tasksList
+        ? this.tasksList.map(
+            (task) =>
+              (totalTime =
+                +totalTime +
+                +task.hours * 60 * 60 +
+                +task.minutes * 60 +
+                +task.seconds)
+          )
+        : 0;
+      return (
+        Math.floor(totalTime / 3600).toLocaleString(undefined, {
+          minimumIntegerDigits: 2,
+        }) +
+        ":" +
+        Math.floor((totalTime % 3600) / 60).toLocaleString(undefined, {
+          minimumIntegerDigits: 2,
+        }) +
+        ":" +
+        ((totalTime % 3600) % 60).toLocaleString(undefined, {
+          minimumIntegerDigits: 2,
+        })
+      );
+    },
   },
   methods: {
     addTask(value) {
