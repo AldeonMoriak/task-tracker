@@ -92,6 +92,7 @@ export default {
         this.focusInput();
       } else if (event.code.toLowerCase() === "escape" && this.isFocused) {
         event.preventDefault();
+        this.taskName = "";
         this.unFocusInput();
       }
     },
