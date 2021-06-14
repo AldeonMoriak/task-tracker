@@ -148,12 +148,21 @@ export default {
       type: String,
       default: "rtl",
     },
+    isFocused: {
+      type: Boolean,
+      default: false,
+    },
   },
   mounted() {
     this.keyboardEventListener = addEventListener("keydown", this.keyListener);
   },
   unmounted() {
     removeEventListener("keydown", this.keyboardEventListener);
+  },
+  watch: {
+    isFocused(value) {
+      this.selectedTask = value ? -1 : this.selectedTask;
+    },
   },
   methods: {
     classNames(index) {

@@ -6,8 +6,8 @@
         ref="taskInput"
         v-model="taskName"
         :placeholder="direction === 'rtl' ? 'عنوان تسک' : 'Enter a task...'"
-        @focus="isFocused = true"
-        @blur="isFocused = false"
+        @focus="(isFocused = true), $emit('is-focused', true)"
+        @blur="(isFocused = false), $emit('is-focused', false)"
         class="
           border border-blue-300
           bg-transparent

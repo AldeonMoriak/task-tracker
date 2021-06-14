@@ -89,6 +89,7 @@
       v-on:task-inserted="addTask"
       class="w-3/4 mx-auto"
       v-on:key-pressed="keyHandler"
+      v-on:is-focused="focusHandler"
     />
     <Tasks
       :tasks="tasksList"
@@ -99,6 +100,7 @@
       v-on:delete-clicked="deleteHandler"
       :direction="dir"
       v-on:key-pressed="keyHandler"
+      :is-focused="isFocused"
     />
     <div class="fixed bottom-3 flex items-end mr-2">
       <div class="flex flex-col ml-2">
@@ -229,6 +231,7 @@ export default {
       isTicking: false,
       counterInterval: null,
       whichKeyIsPressed: "",
+      isFocused: false,
     };
   },
   unmounted() {
@@ -317,6 +320,9 @@ export default {
     },
     timeoutWiper() {
       clearTimeout(this.timer);
+    },
+    focusHandler(value) {
+      this.isFocused = value;
     },
   },
 };
