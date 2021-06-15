@@ -1,4 +1,11 @@
 <template>
+  <Modal
+    v-show="showModal"
+    :direction="dir"
+    :task="taskToChangeName"
+    v-on:task-name-changed="changeNameHandler"
+    ref="modalRef"
+  />
   <div
     :dir="dir"
     class="
@@ -106,6 +113,7 @@
       :direction="dir"
       v-on:key-pressed="keyHandler"
       :is-focused="isFocused"
+      v-on:name-clicked="onNameClickHandler"
     />
     <div class="fixed bottom-3 flex items-end mr-2">
       <div class="flex flex-col ml-2">
@@ -222,11 +230,13 @@
 <script>
 import Tasks from "./components/Tasks.vue";
 import Header from "./components/Header.vue";
+import Modal from "./components/Modal.vue";
 
 export default {
   components: {
     Tasks,
     Header,
+    Modal,
   },
   data() {
     return {
@@ -237,6 +247,11 @@ export default {
       counterInterval: null,
       whichKeyIsPressed: "",
       isFocused: false,
+      showModal: false,
+      taskToChangeName: {
+        name: "",
+        index: -1,
+      },
     };
   },
   unmounted() {
@@ -356,6 +371,25 @@ export default {
     },
     focusHandler(value) {
       this.isFocused = value;
+    },
+    changeNameHandler(value) {
+      if (value && value.name) {
+        this.tasksList[value.index].name = value.name;
+      }
+      this.showModal = false;
+      this.taskToChangeName = {
+        name: "",
+        index: -1,
+      };
+      this.localStorageHandler();
+    },
+    onNameClickHandler(index) {
+      this.showModal = true;
+      this.taskToChangeName = {
+        name: this.tasksList[index].name,
+        index,
+      };
+      this.$refs.modalRef.focusHandler();
     },
   },
 };

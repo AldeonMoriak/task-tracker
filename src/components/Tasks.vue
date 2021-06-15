@@ -9,7 +9,7 @@
         :class="classNames(index)"
         @click="selectedTask = index"
       >
-        <span class="">
+        <span class="" @click.stop="$emit('name-clicked', index)">
           {{ task.name }}
         </span>
         <div class="flex">
