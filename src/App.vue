@@ -310,30 +310,29 @@ export default {
       this.counter();
     },
     counter() {
-      const index = this.currentIndex;
-      if (this.isTicking) {
+      if (this.isTicking && this.currentIndex !== -1) {
         this.counterInterval = setInterval(() => {
-          +this.tasksList[index].seconds++;
-          this.tasksList[index].seconds = this.tasksList[
-            index
+          +this.tasksList[this.currentIndex].seconds++;
+          this.tasksList[this.currentIndex].seconds = this.tasksList[
+            this.currentIndex
           ].seconds.toLocaleString("en-US", {
             minimumIntegerDigits: 2,
             useGrouping: false,
           });
-          if (this.tasksList[index].seconds == 60) {
-            this.tasksList[index].seconds = "00";
-            this.tasksList[index].minutes++;
-            this.tasksList[index].minutes = this.tasksList[
-              index
+          if (this.tasksList[this.currentIndex].seconds == 60) {
+            this.tasksList[this.currentIndex].seconds = "00";
+            this.tasksList[this.currentIndex].minutes++;
+            this.tasksList[this.currentIndex].minutes = this.tasksList[
+              this.currentIndex
             ].minutes.toLocaleString("en-US", {
               minimumIntegerDigits: 2,
               useGrouping: false,
             });
-            if (this.tasksList[index].minutes == 60) {
-              this.tasksList[index].minutes = "00";
-              +this.tasksList[index].hours++;
-              this.tasksList[index].hours = this.tasksList[
-                index
+            if (this.tasksList[this.currentIndex].minutes == 60) {
+              this.tasksList[this.currentIndex].minutes = "00";
+              +this.tasksList[this.currentIndex].hours++;
+              this.tasksList[this.currentIndex].hours = this.tasksList[
+                this.currentIndex
               ].hours.toLocaleString("en-US", {
                 minimumIntegerDigits: 2,
                 useGrouping: false,
