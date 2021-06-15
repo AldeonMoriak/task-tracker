@@ -100,6 +100,7 @@
     />
     <div
       class="bg-purple-200 text-xl w-1/3 mx-auto my-2 rounded p-2 font-vazir"
+      v-if="totalTime !== '00:00:00'"
     >
       {{ (dir === "rtl" ? "زمان کلی:" : "Total Time:") + " " + totalTime }}
     </div>
