@@ -4,7 +4,7 @@ export default defineConfig({
   /* configurations... */
   theme: {
     fontFamily: {
-      vazir: ["Vazir", "WYekan", "Roboto"],
+      vazir: ["Vazir", "Roboto", 'sans-serif'],
     },
   },
 });
