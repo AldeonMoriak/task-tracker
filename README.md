@@ -11,4 +11,4 @@ Demo Picutures:
 
 - [Vite](https://vitejs.dev) - An extremely fast frontend tooling
 - [Vue 3](https://v3.vuejs.org/) 
-- [Windi CSS](https://github.com/windicss/windicss) - On-demand utility-first CSS framework, style your slides at ease
+- [Windi CSS](https://github.com/windicss/windicss) - On-demand utility-first CSS framework
