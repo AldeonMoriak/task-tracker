@@ -1,4 +1,4 @@
-# task-tracker
+# Task Tracker App
 
 An app to track your tasks' times
 
