@@ -2,27 +2,17 @@
   <Modal
     v-show="showModal"
     :direction="dir"
-    :task="taskToChangeName"
+    :index="taskIndex"
     v-on:task-name-changed="changeNameHandler"
     ref="modalRef"
   />
   <div
     :dir="dir"
-    class="
-      mx-auto
-      max-w-screen-md
-      text-center
-      border-t-4 border-blue-300
-      bg-gray-100
-    "
+    class="mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-gray-100"
     :class="tasksList.length < 10 ? 'h-screen' : 'h-full'"
   >
     <div class="flex justify-between">
-      <a
-        href="https://github.com/AldeonMoriak/task-tracker"
-        target="_blank"
-        rel="noreferrer"
-      >
+      <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank" rel="noreferrer">
         <img
           src="/github.png"
           alt="github link to task tracker"
@@ -35,20 +25,7 @@
       <svg
         xmlns="http://www.w3.org/2000/svg"
         v-if="dir === 'rtl'"
-        class="
-          h-8
-          w-8
-          left-1
-          top-1
-          cursor-pointer
-          bg-red-100
-          text-red-600
-          rounded-full
-          p-1
-          m-2
-          hover:(bg-red-200
-          text-red-700)
-        "
+        class="h-8 w-8 left-1 top-1 cursor-pointer bg-red-100 text-red-600 rounded-full p-1 m-2 hover:(bg-red-200 text-red-700)"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -64,20 +41,7 @@
       <svg
         xmlns="http://www.w3.org/2000/svg"
         v-if="dir === 'ltr'"
-        class="
-          h-8
-          w-8
-          right-1
-          top-1
-          cursor-pointer
-          bg-red-100
-          text-red-600
-          rounded-full
-          p-1
-          m-2
-          hover:(bg-red-200
-          text-red-700)
-        "
+        class="h-8 w-8 right-1 top-1 cursor-pointer bg-red-100 text-red-600 rounded-full p-1 m-2 hover:(bg-red-200 text-red-700)"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -101,11 +65,11 @@
     <div
       class="bg-purple-200 text-xl w-1/3 mx-auto my-2 rounded p-2 font-vazir"
       v-if="totalTime !== '00:00:00'"
-    >
-      {{ (dir === "rtl" ? "زمان کلی:" : "Total Time:") + " " + totalTime }}
-    </div>
+    >{{ (dir === "rtl" ? "زمان کلی:" : "Total Time:") + " " + totalTime }}</div>
     <Tasks
       :tasks="tasksList"
+      v-on:show-description="showDescriptionHandler"
+      v-on:add-description="addDescriptionHandler"
       class="w-3/4 mx-auto pb-8"
       :currentIndex="currentIndex"
       :isTicking="isTicking"
@@ -115,6 +79,7 @@
       v-on:key-pressed="keyHandler"
       :is-focused="isFocused"
       v-on:name-clicked="onNameClickHandler"
+      ref="tasks"
     />
     <div class="fixed bottom-3 flex items-end mr-2">
       <div class="flex flex-col ml-2">
@@ -161,9 +126,9 @@
               fill="currentColor"
             />
           </svg>
-          <div class="tooltip text-left">
-            {{ dir === "rtl" ? "حرکت بین تسک ها" : "move between tasks" }}
-          </div>
+          <div
+            class="tooltip text-left"
+          >{{ dir === "rtl" ? "حرکت بین تسک ها" : "move between tasks" }}</div>
         </div>
       </div>
       <div class="has-tooltip">
@@ -171,39 +136,21 @@
           id="space"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          class="
-            w-16
-            h-6
-            border-2 border-gray-600
-            rounded-md
-            ml-2
-            text-gray-600
-            opacity-50
-            hover:opacity-100
-          "
+          class="w-16 h-6 border-2 border-gray-600 rounded-md ml-2 text-gray-600 opacity-50 hover:opacity-100"
           :class="whichKeyIsPressed === 'space' ? 'opacity-100' : ''"
         >
           <path
             d="M21,9a1,1,0,0,0-1,1v3H4V10a1,1,0,0,0-2,0v4a1,1,0,0,0,1,1H21a1,1,0,0,0,1-1V10A1,1,0,0,0,21,9Z"
           />
         </svg>
-        <div class="tooltip text-left">
-          {{ dir === "rtl" ? "شروع/توقف تایمر" : "play/pause timer" }}
-        </div>
+        <div class="tooltip text-left">{{ dir === "rtl" ? "شروع/توقف تایمر" : "play/pause timer" }}</div>
       </div>
       <div class="has-tooltip">
         <svg
           id="slash"
           width="24"
           height="24"
-          class="
-            border-2 border-gray-600
-            rounded-md
-            text-gray-600
-            opacity-50
-            hover:opacity-100
-            ml-2
-          "
+          class="border-2 border-gray-600 rounded-md text-gray-600 opacity-50 hover:opacity-100 ml-2"
           :class="whichKeyIsPressed === 'slash' ? 'opacity-100' : ''"
           viewBox="0 0 24 24"
           fill="none"
@@ -249,10 +196,7 @@ export default {
       whichKeyIsPressed: "",
       isFocused: false,
       showModal: false,
-      taskToChangeName: {
-        name: "",
-        index: -1,
-      },
+      taskIndex: -1,
     };
   },
   unmounted() {
@@ -264,13 +208,13 @@ export default {
       let totalTime = 0;
       this.tasksList
         ? this.tasksList.map(
-            (task) =>
-              (totalTime =
-                +totalTime +
-                +task.hours * 60 * 60 +
-                +task.minutes * 60 +
-                +task.seconds)
-          )
+          (task) =>
+          (totalTime =
+            +totalTime +
+            +task.hours * 60 * 60 +
+            +task.minutes * 60 +
+            +task.seconds)
+        )
         : 0;
       return (
         Math.floor(totalTime / 3600).toLocaleString(undefined, {
@@ -297,6 +241,10 @@ export default {
         hours: "00",
         minutes: "00",
         seconds: "00",
+        description: {
+          isShown: false,
+          text: ''
+        }
       });
       this.localStorageHandler();
     },
@@ -377,20 +325,23 @@ export default {
         this.tasksList[value.index].name = value.name;
       }
       this.showModal = false;
-      this.taskToChangeName = {
-        name: "",
-        index: -1,
-      };
+      this.taskIndex = -1
       this.localStorageHandler();
     },
     onNameClickHandler(index) {
       this.showModal = true;
-      this.taskToChangeName = {
-        name: this.tasksList[index].name,
-        index,
-      };
+      this.taskIndex = index;
+      this.$refs.tasks.selectedTask = -1
       this.$refs.modalRef.focusHandler();
+      this.$refs.modalRef.taskNewName = this.tasksList[index].name;
     },
+    showDescriptionHandler(value) {
+      this.tasksList[value.index].description.isShown = value.show
+    },
+    addDescriptionHandler(value) {
+      this.tasksList[value.index].description.text = value.text
+      this.localStorageHandler();
+    }
   },
 };
 </script>
