@@ -123,7 +123,7 @@
         </div>
         <div
           v-bind:class="classObject"
-          class="bg-gray-100 my-2 rounded-md p-2 transition ease-in-out duration-500 cursor-pointer text-gray-500"
+          class="bg-gray-100 my-2 rounded-md p-2 transition ease-in-out duration-500 cursor-pointer text-gray-500 whitespace-pre-line"
           v-show="task.description.isShown"
           @click.stop="modalOpenHandler(task, index)"
         >{{ descriptionText(task) }}</div>
