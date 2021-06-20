@@ -214,17 +214,17 @@ export default {
       return classNames;
     },
     keyListener(event) {
-      if (event.code.toLowerCase() === "arrowdown") {
+      if (event.code.toLowerCase() === "arrowdown" && !this.modalOpen) {
         this.$emit("key-pressed", "arrowdown");
         event.preventDefault();
         this.moveHandler("down");
-      } else if (event.code.toLowerCase() === "arrowup") {
+      } else if (event.code.toLowerCase() === "arrowup" && !this.modalOpen) {
         this.$emit("key-pressed", "arrowup");
         event.preventDefault();
         this.moveHandler("up");
       } else if (
         event.code.toLowerCase() === "space" &&
-        this.selectedTask !== -1
+        !this.modalOpen
       ) {
         this.$emit("key-pressed", "space");
         event.preventDefault();
