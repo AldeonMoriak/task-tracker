@@ -12,7 +12,7 @@
         class="modal font-vazir absolute top-0 right-0 bottom-0 left-0 flex flex-col items-center justify-center"
       >
         <div
-          class="flex flex-col items-center justify-center p-5 w-72 h-72 rounded-md bg-white w-1/5 h-1/3"
+          class="flex flex-col items-center justify-center p-5 w-72 h-72 rounded-md bg-white min-w-max max-w-md h-1/3"
         >
           <textarea
             :dir="direction"
