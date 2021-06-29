@@ -200,11 +200,9 @@ export default {
   methods: {
     classNames(index) {
       let classNames = "";
-      const background = this.isTicking
-        ? " "
-        : index % 2 === 0
-          ? " bg-gray-50"
-          : " bg-white";
+      const background = index % 2 === 0
+        ? " bg-gray-50"
+        : " bg-white";
       classNames = classNames + background;
       if (this.currentIndex === index && this.isTicking) {
         classNames = classNames + " ring-green-300 bg-green-100";
