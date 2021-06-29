@@ -7,19 +7,8 @@
         v-model="taskName"
         :placeholder="direction === 'rtl' ? 'عنوان تسک' : 'Enter a task...'"
         @focus="(isFocused = true), $emit('is-focused', true)"
-        @blur="(isFocused = false), $emit('is-focused', false)"
-        class="
-          border border-blue-300
-          bg-transparent
-          focus:(ring
-          ring-blue-300)
-          rounded
-          w-42
-          sm:w-64
-          top-4
-          bg-gray-50
-          px-2
-        "
+        @blur="blurHandler"
+        class="border border-blue-300 bg-transparent focus:(ring ring-blue-300) rounded w-42 sm:w-64 top-4 bg-gray-50 px-2"
         @keypress.enter="insertTaskHandler"
       />
       <p class="-mx-5 text-gray-300 px-1" v-show="!isFocused">/</p>
@@ -28,20 +17,7 @@
     <svg
       viewBox="0 0 24 24"
       fill="none"
-      class="
-        mx-8
-        h-6
-        w-6
-        p-1
-        text-green-500
-        cursor-pointer
-        bg-green-100
-        rounded-full
-        hover:(bg-green-200
-        text-green-600)
-        duration-500
-        ease-in-out
-      "
+      class="mx-8 h-6 w-6 p-1 text-green-500 cursor-pointer bg-green-100 rounded-full hover:(bg-green-200 text-green-600) duration-500 ease-in-out"
       @click="insertTaskHandler"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -102,6 +78,12 @@ export default {
     unFocusInput() {
       if (this.$refs.taskInput) this.$refs.taskInput.blur();
     },
+    blurHandler() {
+      setTimeout(() => {
+        this.isFocused = false;
+        $emit('is-focused', false);
+      }, 100);
+    }
   },
 };
 </script>
