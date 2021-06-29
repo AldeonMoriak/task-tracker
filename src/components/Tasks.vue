@@ -224,7 +224,7 @@ export default {
         this.moveHandler("up");
       } else if (
         event.code.toLowerCase() === "space" &&
-        !this.modalOpen
+        !this.modalOpen && !this.isFocused
       ) {
         this.$emit("key-pressed", "space");
         event.preventDefault();
@@ -250,7 +250,7 @@ export default {
       document.getElementById(this.selectedTask).scrollIntoView();
     },
     togglePlayHandler(index) {
-      this.$emit("task-clicked", index);
+      if (index !== -1) this.$emit("task-clicked", index);
     },
     descriptionText(task) {
       return task.description.text ? task.description.text : this.direction === 'rtl' ? 'توضیحات...' : 'Add a description...';
