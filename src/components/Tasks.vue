@@ -40,7 +40,7 @@
         :id="index"
         :key="index"
         @click="selectedTask = index"
-        class="flex flex-col ring p-4 rounded mb-4 list-complete-item"
+        class="flex flex-col ring p-4 rounded mb-4 list-complete-item shadow-md"
         :class="classNames(index)"
       >
         <div class="flex justify-between">
@@ -133,9 +133,9 @@
   <div v-else>
     <div
       v-if="direction === 'rtl'"
-      class="text-red-500 font-vazir text-xl lg:text-3xl font-bold text-center my-5"
+      class="text-gray-500 font-vazir text-xl lg:text-3xl font-bold text-center my-5"
     >تسکی که میخوای رو اضافه کن!</div>
-    <div v-else class="text-red-500 font-semibold text-xl lg:text-3xl text-center my-5">Add a task!</div>
+    <div v-else class="text-gray-500 font-semibold text-xl lg:text-3xl text-center my-5">Add a task!</div>
   </div>
 </template>
 
@@ -203,8 +203,8 @@ export default {
       const background = this.isTicking
         ? " "
         : index % 2 === 0
-          ? " bg-blue-100"
-          : " bg-pink-100";
+          ? " bg-gray-50"
+          : " bg-white";
       classNames = classNames + background;
       if (this.currentIndex === index && this.isTicking) {
         classNames = classNames + " ring-green-300 bg-green-100";
@@ -212,7 +212,7 @@ export default {
         const selected = " ring-red-500";
         classNames = classNames + selected;
       } else {
-        const ringColor = index % 2 === 0 ? " ring-blue-200" : " ring-pink-200";
+        const ringColor = index % 2 === 0 ? " ring-gray-50" : " ring-white";
         classNames = classNames + ringColor;
       }
       return classNames;

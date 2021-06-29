@@ -8,7 +8,7 @@
   />
   <div
     :dir="dir"
-    class="mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-gray-100"
+    class="mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-blue-50"
     :class="tasksList.length < 10 ? 'h-screen' : 'h-full'"
   >
     <div class="flex justify-between">
@@ -63,7 +63,7 @@
       v-on:is-focused="focusHandler"
     />
     <div
-      class="bg-purple-200 text-xl w-1/3 mx-auto my-2 rounded p-2 font-vazir"
+      class="bg-purple-100 text-xl w-1/3 mx-auto my-2 rounded p-2 text-gray-500 font-vazir"
       v-if="totalTime !== '00:00:00'"
     >{{ (dir === "rtl" ? "زمان کلی:" : "Total Time:") + " " + totalTime }}</div>
     <Tasks

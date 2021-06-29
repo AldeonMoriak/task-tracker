@@ -112,7 +112,7 @@ export default {
     blurHandler() {
       setTimeout(() => {
         this.isFocused = false;
-        $emit('is-focused', false);
+        this.$emit('is-focused', false);
       }, 100);
     }
   },
