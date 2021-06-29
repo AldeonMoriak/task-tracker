@@ -80,6 +80,7 @@
       :is-focused="isFocused"
       v-on:name-clicked="onNameClickHandler"
       ref="tasks"
+      :showModal="showModal"
     />
     <div class="fixed bottom-3 flex items-end mr-2">
       <div class="flex flex-col ml-2">

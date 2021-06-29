@@ -173,6 +173,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    showModal: {
+      type: Boolean,
+      required: true,
+    }
   },
   mounted() {
     this.keyboardEventListener = addEventListener("keydown", this.keyListener);
@@ -224,7 +228,7 @@ export default {
         this.moveHandler("up");
       } else if (
         event.code.toLowerCase() === "space" &&
-        !this.modalOpen && !this.isFocused
+        !this.modalOpen && !this.isFocused && !this.showModal
       ) {
         this.$emit("key-pressed", "space");
         event.preventDefault();
