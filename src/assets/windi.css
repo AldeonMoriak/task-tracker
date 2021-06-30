@@ -1,6 +1,25 @@
 .tooltip {
-  @apply opacity-0 fixed transform -translate-y-full -mt-6 rounded border border-gray-200 bg-gray-100 shadow-lg text-sm transition-opacity  text-gray-500 ease-in-out duration-300 p-1;
+  @apply opacity-0 fixed transform -translate-y-full  rounded border border-gray-200 bg-gray-100 shadow-lg text-sm transition-opacity  text-gray-500 ease-in-out duration-300 p-1;
 }
+.has-tooltip:hover .tooltip {
+  @apply opacity-100 z-50;
+}
+.tooltip-top {
+  @apply mt-6;
+}
+
+.tooltip[dir="rtl"] {
+  @apply -mr-18;
+}
+
+.tooltip[dir="ltr"] {
+  @apply -ml-12;
+}
+
+.tooltip-bottom {
+  @apply -mt-6;
+}
+
 .has-tooltip:hover .tooltip {
   @apply opacity-100 z-50;
 }
