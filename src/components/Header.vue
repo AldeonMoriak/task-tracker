@@ -9,7 +9,7 @@
           :placeholder="direction === 'rtl' ? 'عنوان تسک' : 'Enter a task...'"
           @focus="(isFocused = true), $emit('is-focused', true)"
           @blur="blurHandler"
-          class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full text-seven leading-seven font-bold-body-weight flex py-4 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400"
+          class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full text-seven leading-seven font-vazir font-bold-body-weight flex py-4 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400"
           @keypress.enter="insertTaskHandler"
         />
         <div
