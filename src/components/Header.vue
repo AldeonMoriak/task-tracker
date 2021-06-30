@@ -1,6 +1,6 @@
 <template>
   <header class="flex mt-4 items-center font-vazir">
-    <div class="relative w-full h-16 mb-24 flex items-center justify-center">
+    <div class="relative w-full mb-24 flex items-center justify-center">
       <div class="max-w-24rem absolute top-0 w-full">
         <input
           type="text"
