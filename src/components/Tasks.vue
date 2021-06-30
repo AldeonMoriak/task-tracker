@@ -40,7 +40,7 @@
         :id="index"
         :key="index"
         @click="selectedTask = index"
-        class="flex flex-col ring p-4 rounded mb-4 list-complete-item shadow-md"
+        class="flex flex-col p-4 rounded mb-4 list-complete-item shadow-md"
         :class="classNames(index)"
       >
         <div class="flex justify-between">
@@ -205,12 +205,13 @@ export default {
         : " bg-white";
       classNames = classNames + background;
       if (this.currentIndex === index && this.isTicking) {
-        classNames = classNames + " ring-green-300 bg-green-100";
-      } else if (this.selectedTask === index) {
-        const selected = " ring-red-500";
+        classNames = classNames + " bg-green-100";
+      }
+      if (this.selectedTask === index) {
+        const selected = " !ring-2 ring-red-500";
         classNames = classNames + selected;
       } else {
-        const ringColor = index % 2 === 0 ? " ring-gray-50" : " ring-white";
+        const ringColor = index % 2 === 0 ? " ring-2 ring-gray-50" : " ring-2 ring-white";
         classNames = classNames + ringColor;
       }
       return classNames;
