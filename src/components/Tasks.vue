@@ -208,7 +208,7 @@ export default {
         classNames = classNames + " bg-green-100";
       }
       if (this.selectedTask === index) {
-        const selected = " !ring-2 ring-red-500";
+        const selected = " !ring-2 ring-gray-300";
         classNames = classNames + selected;
       } else {
         const ringColor = index % 2 === 0 ? " ring-2 ring-gray-50" : " ring-2 ring-white";
