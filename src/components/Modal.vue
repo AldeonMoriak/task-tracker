@@ -1,7 +1,7 @@
 <template>
   <!-- This example requires Tailwind CSS v2.0+ -->
   <div
-    :dir="direction"
+    :dir="store.dir"
     class="fixed z-10 inset-0 overflow-y-auto font-vazir"
     aria-labelledby="modal-title"
     role="dialog"
@@ -63,14 +63,14 @@
             <div
               class="mt-3 text-center sm:mt-0"
               :class="
-                direction === 'rtl'
+                store.dir === 'rtl'
                   ? 'sm:text-right  sm:mr-4'
                   : 'sm:text-left  sm:ml-4'
               "
             >
               <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
                 {{
-                  direction === "rtl" ? "تغییر نام تسک" : "Change Task's name"
+                  store.dir === "rtl" ? "تغییر نام تسک" : "Change Task's name"
                 }}
               </h3>
               <div class="mt-2">
@@ -83,11 +83,11 @@
                   class="bg-gray-100 px-2 py-1 rounded-md focus:(bg-white border border-blue-200 ring ring-blue-300)"
                   ref="inputRef"
                   :placeholder="
-                    direction === 'rtl' ? 'عنوان تسک' : 'Task\'s name'
+                    store.dir === 'rtl' ? 'عنوان تسک' : 'Task\'s name'
                   "
                   type="text"
-                  v-model="taskNewName"
-                  @keypress.enter="sendTaskName"
+                  v-model="name"
+                  @keypress.enter="saveNameHandler"
                 />
               </div>
             </div>
@@ -97,52 +97,66 @@
           <button
             type="button"
             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-            @click="sendTaskName"
-          >{{ direction === "rtl" ? "ثبت" : "Save" }}</button>
+            @click="saveNameHandler"
+          >{{ store.dir === "rtl" ? "ثبت" : "Save" }}</button>
           <button
             type="button"
             class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-            @click="$emit('task-name-changed')"
-          >{{ direction === "rtl" ? "بازگشت" : "Cancel" }}</button>
+            @click="cancelHandler"
+          >{{ store.dir === "rtl" ? "بازگشت" : "Cancel" }}</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-export default {
+import { ref, defineComponent, watch } from 'vue'
+import { useTask } from '../stores/tasks'
+
+export default defineComponent({
   props: {
-    index: {
-      type: Number,
-      required: true
-    },
-    direction: {
+    name: {
       type: String,
-      default: "rtl",
-    },
+      required: true
+    }
   },
-  data() {
-    return {
-      taskNewName: '',
-      timer: null,
-    };
-  },
-  unmounted() {
-    clearTimeout(this.timer);
-  },
-  methods: {
-    sendTaskName() {
-      this.$emit("task-name-changed", {
-        name: this.taskNewName,
-        index: this.index,
-      });
-      this.taskNewName = "";
-    },
-    focusHandler() {
+  setup(props) {
+
+    const store = useTask();
+    const name = ref(props.name);
+    const inputRef = ref(null)
+
+    const cancelHandler = () => {
+      name.value = ''
+      store.showNameModal = false
+      store.aboutToChangeNameTaskIndex = -1
+    }
+
+    const focusHandler = () => {
       this.timer = setTimeout(() => {
-        this.$refs.inputRef.focus();
+        inputRef.focus();
       }, 100);
-    },
+    }
+
+    const saveNameHandler = () => {
+      store.tasks[store.getTaskNameIndex].name = name.value
+      cancelHandler()
+    }
+
+    watch(() => store.showNameModal,
+      () => {
+        if (store.showNameModal) {
+          focusHandler()
+        }
+      })
+
+    return {
+      name,
+      store,
+      inputRef,
+      cancelHandler,
+      saveNameHandler
+    }
   },
-};
+});
 </script>

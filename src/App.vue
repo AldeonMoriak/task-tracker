@@ -1,22 +1,15 @@
 <template>
-  <Modal
-    v-show="showModal"
-    :direction="dir"
-    :index="taskIndex"
-    v-on:task-name-changed="changeNameHandler"
-    ref="modalRef"
-  />
   <div
-    :dir="dir"
+    :dir="store.dir"
     class="mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-blue-50"
-    :class="tasksList.length < 10 ? 'h-screen' : 'h-full'"
+    :class="store.tasks.length < 10 ? 'h-screen' : 'h-full'"
   >
     <div class="flex justify-between mt-1">
       <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank" rel="noreferrer">
         <img
           src="/github.png"
           alt="github link to task tracker"
-          :class="dir === 'rtl' ? 'right-1' : 'left-1'"
+          :class="store.dir === 'rtl' ? 'right-1' : 'left-1'"
           class="top-1 cursor-pointer w-8 h-8 opacity-50 hover:opacity-90 m-2"
           width="64px"
           height="64px"
@@ -30,7 +23,7 @@
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          @click="dir === 'rtl' ? dir = 'ltr' : dir = 'rtl'"
+          @click="store.dir === 'rtl' ? store.dir = 'ltr' : store.dir = 'rtl'"
         >
           <path
             fill-rule="evenodd"
@@ -39,9 +32,9 @@
             fill="currentColor"
           />
         </svg>
-        <div class="tooltip tooltip-top" :dir="dir">
+        <div class="tooltip tooltip-top" :dir="store.dir">
           {{
-            dir === "rtl"
+            store.dir === "rtl"
               ? "English / انگلیسی"
               : "Farsi / فارسی"
           }}
@@ -60,7 +53,7 @@
       v-if="totalTime !== '00:00:00'"
     >{{ (dir === "rtl" ? "زمان کلی:" : "Total Time:") + " " + totalTime }}</div>
     <Tasks
-      :tasks="tasksList"
+      :tasks="tasks"
       v-on:show-description="showDescriptionHandler"
       v-on:add-description="addDescriptionHandler"
       class="w-3/4 mx-auto pb-8"
@@ -175,169 +168,17 @@
 import Tasks from "./components/Tasks.vue";
 import Header from "./components/Header.vue";
 import Modal from "./components/Modal.vue";
+import { defineComponent, watch } from 'vue'
+import { useTask } from './stores/tasks'
 
-export default {
+export default defineComponent({
   components: {
     Tasks,
     Header,
     Modal,
   },
-  data() {
-    return {
-      tasksList: JSON.parse(window.localStorage.getItem("tasks")) ?? [],
-      dir: "rtl",
-      currentIndex: -1,
-      isTicking: false,
-      counterInterval: null,
-      whichKeyIsPressed: "",
-      isFocused: false,
-      showModal: false,
-      taskIndex: -1,
-    };
-  },
-  unmounted() {
-    clearInterval(this.counterInterval);
-    this.timeoutWiper();
-  },
-  computed: {
-    totalTime() {
-      let totalTime = 0;
-      this.tasksList
-        ? this.tasksList.map(
-          (task) =>
-          (totalTime =
-            +totalTime +
-            +task.hours * 60 * 60 +
-            +task.minutes * 60 +
-            +task.seconds)
-        )
-        : 0;
-      return (
-        Math.floor(totalTime / 3600).toLocaleString(undefined, {
-          minimumIntegerDigits: 2,
-        }) +
-        ":" +
-        Math.floor((totalTime % 3600) / 60).toLocaleString(undefined, {
-          minimumIntegerDigits: 2,
-        }) +
-        ":" +
-        ((totalTime % 3600) % 60).toLocaleString(undefined, {
-          minimumIntegerDigits: 2,
-        })
-      );
-    },
-  },
-  methods: {
-    addTask(value) {
-      if (!value || value.length < 1) {
-        return;
-      }
-      this.tasksList.push({
-        name: value,
-        hours: "00",
-        minutes: "00",
-        seconds: "00",
-        description: {
-          isShown: false,
-          text: ''
-        }
-      });
-      this.localStorageHandler();
-    },
-    taskCounter(index) {
-      if (index === this.currentIndex) {
-        this.isTicking = !this.isTicking;
-      } else {
-        this.isTicking = true;
-      }
-      clearInterval(this.counterInterval);
-      this.currentIndex = index;
-      this.counter();
-    },
-    counter() {
-      if (this.isTicking && this.currentIndex !== -1) {
-        this.counterInterval = setInterval(() => {
-          +this.tasksList[this.currentIndex].seconds++;
-          this.tasksList[this.currentIndex].seconds = this.tasksList[
-            this.currentIndex
-          ].seconds.toLocaleString("en-US", {
-            minimumIntegerDigits: 2,
-            useGrouping: false,
-          });
-          if (this.tasksList[this.currentIndex].seconds == 60) {
-            this.tasksList[this.currentIndex].seconds = "00";
-            this.tasksList[this.currentIndex].minutes++;
-            this.tasksList[this.currentIndex].minutes = this.tasksList[
-              this.currentIndex
-            ].minutes.toLocaleString("en-US", {
-              minimumIntegerDigits: 2,
-              useGrouping: false,
-            });
-            if (this.tasksList[this.currentIndex].minutes == 60) {
-              this.tasksList[this.currentIndex].minutes = "00";
-              +this.tasksList[this.currentIndex].hours++;
-              this.tasksList[this.currentIndex].hours = this.tasksList[
-                this.currentIndex
-              ].hours.toLocaleString("en-US", {
-                minimumIntegerDigits: 2,
-                useGrouping: false,
-              });
-            }
-          }
-          this.localStorageHandler();
-        }, 1000);
-      }
-    },
-    localStorageHandler() {
-      window.localStorage.setItem(
-        "tasks",
-        JSON.stringify(this.tasksList, null, 2)
-      );
-    },
-    deleteHandler(index) {
-      this.tasksList.splice(index, 1);
-      if (this.currentIndex > index) this.currentIndex--;
-      else if (this.currentIndex == index) {
-        this.currentIndex = -1;
-        clearInterval(this.counterInterval);
-      }
-      this.localStorageHandler();
-    },
-    keyHandler(key) {
-      this.timeoutWiper();
-      this.whichKeyIsPressed = key;
-      this.timer = setTimeout(() => {
-        this.whichKeyIsPressed = "";
-      }, 200);
-    },
-    timeoutWiper() {
-      clearTimeout(this.timer);
-    },
-    focusHandler(value) {
-      this.isFocused = value;
-    },
-    changeNameHandler(value) {
-      if (value && value.name) {
-        this.tasksList[value.index].name = value.name;
-      }
-      this.showModal = false;
-      this.taskIndex = -1
-      this.localStorageHandler();
-    },
-    onNameClickHandler(index) {
-      this.showModal = true;
-      this.taskIndex = index;
-      this.$refs.tasks.selectedTask = -1
-      this.$refs.modalRef.focusHandler();
-      this.$refs.modalRef.taskNewName = this.tasksList[index].name;
-    },
-    showDescriptionHandler(value) {
-      this.tasksList[value.index].description.isShown = value.show
-    },
-    addDescriptionHandler(value) {
-      this.tasksList[value.index].description.text = value.text
-      this.localStorageHandler();
-    }
-  },
-};
+  setup() {
+    return { tasks: taskStore.tasks }
+  }
+});
 </script>

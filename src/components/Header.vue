@@ -5,9 +5,9 @@
         <input
           type="text"
           ref="taskInput"
-          v-model="taskName"
-          :placeholder="direction === 'rtl' ? 'عنوان تسک' : 'Enter a task...'"
-          @focus="(isFocused = true), $emit('is-focused', true)"
+          v-model="newTaskName"
+          :placeholder="store.dir === 'rtl' ? 'عنوان تسک' : 'Enter a task...'"
+          @focus="focusHandler"
           @blur="blurHandler"
           class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full text-seven leading-seven font-vazir font-bold-body-weight flex py-4 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400"
           @keypress.enter="insertTaskHandler"
@@ -60,39 +60,29 @@
   </header>
 </template>
 <script>
-export default {
-  props: {
-    direction: {
-      type: String,
-      default: "rtl",
-    },
-  },
-  data() {
-    return {
-      taskName: "",
-      isFocused: false,
-      keyboardEventListener: null,
-    };
-  },
-  mounted() {
-    this.keyboardEventListener = addEventListener(
-      "keydown",
-      this.keyListenerHandler
-    );
-  },
-  unmounted() {
-    removeEventListener("keydown", this.keyboardEventListener);
-  },
-  methods: {
-    showToggleHandler() {
-      this.focusInput();
-    },
-    insertTaskHandler() {
-      this.$emit("task-inserted", this.taskName);
-      this.taskName = "";
-      this.unFocusInput();
-    },
-    keyListenerHandler(event) {
+import { defineComponent, onMounted, ref } from 'vue'
+import { useTask } from '../stores/tasks'
+export default defineComponent({
+  setup() {
+    const newTaskName = ref('')
+    const store = useTask()
+    const keyboardEventListener = ref(null)
+
+    const focusHandler = () => {
+      store.isFocused = true
+    }
+
+    const blurHandler = () => {
+      store.isFocused = false;
+    }
+
+    const insertTaskHandler = () => {
+      store.addTask(newTaskName.value)
+      newTaskName.value = "";
+      blurHandler()
+    }
+
+    const keyListenerHandler = (event) => {
       if (event.code.toLowerCase() === "slash" && !this.isFocused) {
         this.$emit("key-pressed", "slash");
         event.preventDefault();
@@ -102,19 +92,45 @@ export default {
         this.taskName = "";
         this.unFocusInput();
       }
-    },
-    focusInput() {
+    }
+
+    const focusInput = () => {
       if (this.$refs.taskInput) this.$refs.taskInput.focus();
     },
-    unFocusInput() {
+    const unFocusInput = () {
       if (this.$refs.taskInput) this.$refs.taskInput.blur();
     },
-    blurHandler() {
-      setTimeout(() => {
-        this.isFocused = false;
-        this.$emit('is-focused', false);
-      }, 100);
+
+      onMounted(() => {
+        keyboardEventListener.value = addEventListener(
+          "keydown",
+          keyListenerHandler
+        );
+      })
+
+    return {
+      newTaskName,
+      store,
+      focusHandler,
+      blurHandler,
+      insertTaskHandler,
     }
   },
-};
+  data() {
+    return {
+    };
+  },
+  unmounted() {
+    removeEventListener("keydown", this.keyboardEventListener);
+  },
+  methods: {
+    showToggleHandler() {
+      this.focusInput();
+    },
+    insertTaskHandler() {
+    },
+    blurHandler() {
+    }
+  },
+});
 </script>

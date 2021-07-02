@@ -1,22 +1,23 @@
 <template>
-  <div v-if="tasks && tasks.length > 0" class="mt-4 font-vazir">
+  <Modal v-show="store.showNameModal" :name="clickedName" ref="modalRef" />
+  <div v-if="store.tasks && store.tasks.length > 0" class="mt-4 font-vazir">
     <teleport to="body">
       <div
-        v-if="modalOpen"
-        :dir="direction"
+        v-if="store.showDescriptionModal"
+        :dir="store.dir"
         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
         aria-hidden="true"
       ></div>
       <div
-        v-if="modalOpen"
+        v-if="store.showDescriptionModal"
         class="modal font-vazir absolute top-0 right-0 bottom-0 left-0 flex flex-col items-center justify-center"
       >
         <div
           class="flex flex-col items-center justify-center p-5 w-72 h-72 rounded-md bg-white min-w-max max-w-md h-1/3"
         >
           <textarea
-            :dir="direction"
-            v-model="descriptionNewValue"
+            :dir="store.dir"
+            v-model="descriptionValue"
             class="p-2 my-2 rounded-md bg-gray-200 w-full h-full"
           />
           <div class="flex">
@@ -24,28 +25,28 @@
               type="button"
               @click="saveDescriptionHandler"
               class="rounded-md bg-green-200 text-green-800 px-2 py-1 hover:(bg-green-300 text-green-900)"
-            >{{ direction === 'rtl' ? 'ثبت' : 'Save' }}</button>
+            >{{ store.dir === 'rtl' ? 'ثبت' : 'Save' }}</button>
             <button
               type="button"
               @click="cancelHandler"
               class="mx-2 rounded-md bg-red-200 text-red-800 px-2 py-1 hover:(bg-red-300 text-red-900)"
-            >{{ direction === 'rtl' ? 'بازگشت' : 'Cancel' }}</button>
+            >{{ store.dir === 'rtl' ? 'بازگشت' : 'Cancel' }}</button>
           </div>
         </div>
       </div>
     </teleport>
     <transition-group name="list-complete" tag="div">
       <div
-        v-for="(task, index) in tasks"
+        v-for="(task, index) in store.tasks"
         :id="index"
         :key="index"
-        @click="selectedTask = index"
+        @click="store.selectedTaskIndex = index"
         class="flex flex-col p-4 rounded mb-4 list-complete-item shadow-md"
         :class="classNames(index)"
       >
         <div class="flex justify-between">
           <div class="flex">
-            <span class @click.stop="$emit('name-clicked', index)">{{ task.name }}</span>
+            <span class @click.stop="nameModalHandler(task.name, index)">{{ task.name }}</span>
             <svg
               v-if="!task.description.isShown"
               id="chevron-down"
@@ -125,7 +126,7 @@
           v-bind:class="classObject"
           class="bg-gray-100 my-2 rounded-md p-2 transition ease-in-out duration-500 cursor-pointer text-gray-500 whitespace-pre-line"
           v-show="task.description.isShown"
-          @click.stop="modalOpenHandler(task, index)"
+          @click.stop="descriptionModalOpenHandler(task, index)"
         >{{ descriptionText(task) }}</div>
       </div>
     </transition-group>
@@ -140,74 +141,53 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      keyboardEventListener: null,
-      selectedTask: -1,
-      modalOpen: false,
-      descriptionNewValue: '',
-      descriptionIndex: -1,
-    };
-  },
-  props: {
-    tasks: {
-      type: Array,
-      default() {
-        return [];
+import { watch, ref, defineComponent } from 'vue'
+import { useTask } from '../stores/tasks'
+
+export default defineComponent({
+  setup() {
+    const taskStore = useTask()
+
+    const clickedName = ref('')
+
+    watch(
+      () => taskStore.tasks,
+      () => {
+        // persist the whole state to the local storage whenever it changes
+        localStorage.setItem('tasks', JSON.stringify(taskStore.tasks))
       },
-    },
-    currentIndex: {
-      type: Number,
-      default: -1,
-    },
-    isTicking: {
-      type: Boolean,
-      default: false,
-    },
-    direction: {
-      type: String,
-      default: "rtl",
-    },
-    isFocused: {
-      type: Boolean,
-      default: false,
-    },
-    showModal: {
-      type: Boolean,
-      required: true,
+      { deep: true }
+    )
+    const descriptionValue = ref('')
+    const taskDescriptionIndex = ref(-1)
+
+    const saveDescriptionHandler = () => {
+      taskStore.addDescription(descriptionValue.value, taskDescriptionIndex.value)
+      cancelHandler()
     }
-  },
-  mounted() {
-    this.keyboardEventListener = addEventListener("keydown", this.keyListener);
-  },
-  unmounted() {
-    removeEventListener("keydown", this.keyboardEventListener);
-  },
-  watch: {
-    isFocused(value) {
-      this.selectedTask = value ? -1 : this.selectedTask;
-    },
-  },
-  computed: {
-    classObject: function() {
-      return {
-        'text-right': this.direction === 'rtl',
-        'text-left': this.direction !== 'rtl'
-      }
+
+    const descriptionModalOpenHandler = (task, index) => {
+      taskStore.showDescriptionModal = true
+      descriptionValue.value = task.description.text
+      taskDescriptionIndex.value = index
     }
-  },
-  methods: {
-    classNames(index) {
+
+    const cancelHandler = () => {
+      taskStore.showDescriptionModal = false
+      descriptionValue.value = ''
+      taskDescriptionIndex.value = -1
+    }
+
+    const classNames = (index) => {
       let classNames = "";
       const background = index % 2 === 0
         ? " bg-gray-50"
         : " bg-white";
       classNames = classNames + background;
-      if (this.currentIndex === index && this.isTicking) {
+      if (taskStore.currentIndex === index && taskStore.tasks[index].isTicking) {
         classNames = classNames + " bg-green-100";
       }
-      if (this.selectedTask === index) {
+      if (taskStore.selectedTaskIndex === index) {
         const selected = " !ring-2 ring-gray-300";
         classNames = classNames + selected;
       } else {
@@ -215,70 +195,28 @@ export default {
         classNames = classNames + ringColor;
       }
       return classNames;
-    },
-    keyListener(event) {
-      if (event.code.toLowerCase() === "arrowdown" && !this.modalOpen) {
-        this.$emit("key-pressed", "arrowdown");
-        event.preventDefault();
-        this.moveHandler("down");
-      } else if (event.code.toLowerCase() === "arrowup" && !this.modalOpen) {
-        this.$emit("key-pressed", "arrowup");
-        event.preventDefault();
-        this.moveHandler("up");
-      } else if (
-        event.code.toLowerCase() === "space" &&
-        !this.modalOpen && !this.isFocused && !this.showModal
-      ) {
-        this.$emit("key-pressed", "space");
-        event.preventDefault();
-        this.togglePlayHandler(this.selectedTask);
-      } else if (event.code.toLowerCase() === "escape") {
-        this.$emit("key-pressed", "escape");
-        event.preventDefault();
-        this.selectedTask = -1;
-      }
-    },
-    moveHandler(direction) {
-      if (direction === "down") {
-        this.selectedTask++;
-        if (this.selectedTask > this.tasks.length - 1) {
-          this.selectedTask = 0;
-        }
-      } else if (direction === "up") {
-        this.selectedTask--;
-        if (this.selectedTask < 0) {
-          this.selectedTask = this.tasks.length - 1;
-        }
-      }
-      document.getElementById(this.selectedTask).scrollIntoView();
-    },
-    togglePlayHandler(index) {
-      if (index !== -1) this.$emit("task-clicked", index);
-    },
-    descriptionText(task) {
-      return task.description.text ? task.description.text : this.direction === 'rtl' ? 'توضیحات...' : 'Add a description...';
-    },
-    consoleHandler() {
-      console.log(this.descriptionNewValue)
-    },
-    cancelHandler() {
-      this.modalOpen = false;
-      this.descriptionNewValue = ''
-      this.descriptionIndex = -1
-    },
-    saveDescriptionHandler() {
-      this.$emit('add-description', { text: this.descriptionNewValue, index: this.descriptionIndex });
-      this.cancelHandler();
-    },
-    modalOpenHandler(task, index) {
-      this.selectedTask = -1
-      this.descriptionIndex = index
-      this.modalOpen = true;
-      this.descriptionNewValue = task.description.text
     }
+
+    const nameModalHandler = (name, index) => {
+      taskStore.aboutToChangeNameTaskIndex = index
+      clickedName.value = name
+
+    }
+
+    return {
+      store: taskStore,
+      descriptionValue,
+      saveDescriptionHandler,
+      descriptionModalOpenHandler,
+      cancelHandler,
+      classNames,
+      nameModalHandler
+    }
+
   },
-};
+})
 </script>
+
 
 <style scoped>
 .list-complete-item {
