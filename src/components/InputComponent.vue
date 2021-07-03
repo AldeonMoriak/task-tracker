@@ -67,6 +67,7 @@ export default defineComponent({
     const newTaskName = ref('')
     const store = useTask()
     const keyboardEventListener = ref(null)
+    const taskInput = ref(null)
 
     const focusHandler = () => {
       store.isFocused = true
@@ -79,7 +80,7 @@ export default defineComponent({
     const insertTaskHandler = () => {
       store.addTask(newTaskName.value)
       newTaskName.value = "";
-      blurHandler()
+      taskInput.value.blur();
     }
 
     const keyListenerHandler = (event) => {
@@ -111,6 +112,7 @@ export default defineComponent({
       focusHandler,
       blurHandler,
       insertTaskHandler,
+      taskInput
     }
   },
 });
