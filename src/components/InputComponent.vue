@@ -14,10 +14,10 @@
         />
         <div
           class="absolute top-0 p-2"
-          :class="{ 'left-0': direction === 'rtl', 'right-0': direction === 'ltr' }"
+          :class="{ 'left-0': store.dir === 'rtl', 'right-0': store.dir === 'ltr' }"
         >
           <button
-            v-show="taskName && isFocused"
+            v-show="newTaskName && store.isFocused"
             class="focus:outline-none bg-gray-50 border-2 text-green-400 border-white rounded-2xl p-2 hover:text-green-700"
           >
             <svg
@@ -34,7 +34,7 @@
             </svg>
           </button>
           <button
-            v-show="!isFocused"
+            v-show="!store.isFocused"
             class="focus:outline-none bg-gray-50 border-2 text-gray-400 border-white rounded-2xl p-2 cursor-default"
           >
             <svg
@@ -96,17 +96,14 @@ export default defineComponent({
 
     const focusInput = () => {
       if (this.$refs.taskInput) this.$refs.taskInput.focus();
-    },
-    const unFocusInput = () {
-      if (this.$refs.taskInput) this.$refs.taskInput.blur();
-    },
+    }
 
-      onMounted(() => {
-        keyboardEventListener.value = addEventListener(
-          "keydown",
-          keyListenerHandler
-        );
-      })
+    onMounted(() => {
+      keyboardEventListener.value = addEventListener(
+        "keydown",
+        keyListenerHandler
+      );
+    })
 
     return {
       newTaskName,
@@ -114,22 +111,6 @@ export default defineComponent({
       focusHandler,
       blurHandler,
       insertTaskHandler,
-    }
-  },
-  data() {
-    return {
-    };
-  },
-  unmounted() {
-    removeEventListener("keydown", this.keyboardEventListener);
-  },
-  methods: {
-    showToggleHandler() {
-      this.focusInput();
-    },
-    insertTaskHandler() {
-    },
-    blurHandler() {
     }
   },
 });

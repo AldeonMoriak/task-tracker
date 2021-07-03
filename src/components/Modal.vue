@@ -110,7 +110,7 @@
   </div>
 </template>
 <script>
-import { ref, defineComponent, watch } from 'vue'
+import { ref, defineComponent, watch, onUnmounted } from 'vue'
 import { useTask } from '../stores/tasks'
 
 export default defineComponent({
@@ -123,8 +123,17 @@ export default defineComponent({
   setup(props) {
 
     const store = useTask();
-    const name = ref(props.name);
+    const name = ref('');
     const inputRef = ref(null)
+    const timer = ref(null)
+
+    watch(() => props.name, (first, second) => {
+      name.value = props.name;
+    })
+
+    onUnmounted(() => {
+      window.clearTimeout(timer.value)
+    })
 
     const cancelHandler = () => {
       name.value = ''
@@ -133,8 +142,8 @@ export default defineComponent({
     }
 
     const focusHandler = () => {
-      this.timer = setTimeout(() => {
-        inputRef.focus();
+      timer.value = setTimeout(() => {
+        inputRef.value.focus();
       }, 100);
     }
 

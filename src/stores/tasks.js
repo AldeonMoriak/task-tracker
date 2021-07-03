@@ -1,98 +1,163 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
 export const useTask = defineStore({
-    // name of the store
-    // it is used in devtools and allows restoring state
-    id: 'tasksStore',
-    // a function that returns a fresh state
-    state: () => ({
-        tasks: JSON.parse(window.localStorage.getItem("tasks")) ?? [],
-        dir: "rtl",
-        currentIndex: -1,
-        isFocused: false,
-        showNameModal: false,
-        showDescriptionModal: false,
-        whichKeyIsPressed: "",
-        selectedTaskIndex: -1,
-        aboutToChangeNameTaskIndex: -1,
-    }),
-    // optional getters
-    getters: {
-        getTaskNameIndex: state => state.aboutToChangeNameTaskIndex,
-        totalTime(state) {
-            let totalTime = 0;
-            if (state.tasks)
-                state.tasks.map(
-                    (task, index) =>
-                        totalTime = totalTime + this.taskTotalTime(index)
-                )
-            return state.toStringTime(totalTime)
+  // name of the store
+  // it is used in devtools and allows restoring state
+  id: "tasksStore",
+  // a function that returns a fresh state
+  state: () => ({
+    tasks: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).tasks
+      : [],
+    dir: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).dir
+      : "rtl",
+    currentIndex: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).currentIndex
+      : -1,
+    isFocused: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).isFocused
+      : false,
+    showNameModal: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).showNameModal
+      : false,
+    showDescriptionModal: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore"))
+          .showDescriptionModal
+      : false,
+    whichKeyIsPressed: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).whichKeyIsPressed
+      : "",
+    selectedTaskIndex: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).selectedTaskIndex
+      : -1,
+    aboutToChangeNameTaskIndex: JSON.parse(
+      window.localStorage.getItem("taskStore")
+    )
+      ? JSON.parse(window.localStorage.getItem("taskStore"))
+          .aboutToChangeNameTaskIndex
+      : -1,
+      totalTime: JSON.parse(
+      window.localStorage.getItem("taskStore")) ? JSON.parse(
+      window.localStorage.getItem("taskStore")).totalTime : '00:00:00',
+      timer: JSON.parse(
+      window.localStorage.getItem("taskStore")) ? JSON.parse(
+      window.localStorage.getItem("taskStore")).timer : null,
+  }),
+  // optional getters
+  getters: {
+    getTaskNameIndex: (state) => state.aboutToChangeNameTaskIndex,
+    isTicking: (state) => state.tasks.some((task) => task.isTicking),
+    tickingTime: (state) =>
+      this.toStringTime(
+        this.taskTotalTime(state.tasks.findIndex((task) => task.isTicking))
+      ),
+  },
+  // optional actions
+  actions: {
+    addTask(value) {
+      if (!value || value.length < 1) {
+        return;
+      }
+      this.tasks.push({
+        name: value,
+        dates: [],
+        description: {
+          isShown: false,
+          text: "",
         },
-        isTicking: (state) => state.tasks.some(task => task.isTicking)
+        isTicking: false,
+        totalTime: "00:00:00",
+      });
     },
-    // optional actions
-    actions: {
-        addTask(value) {
-            if (!value || value.length < 1) {
-                return;
-            }
-            this.tasks.push({
-                name: value,
-                dates: [],
-                description: {
-                    isShown: false,
-                    text: ''
-                },
-                isTicking: false
-            });
-        },
-        addDescription(value, index) {
-            this.task[index].description.text = value
-        },
-        toggleTask(index, type) {
-            if (type === 'start') {
-                this.tasks[index].dates.push({ start: Date.now() });
-                if (this.currentIndex !== index && this.currentIndex !== -1) {
-                    const dateIndex = this.tasks[this.currentIndex].dates.length - 1
-                    this.tasks[this.currentIndex].dates[dateIndex].end = Date.now();
-                }
-            } else {
-                const dateIndex = this.tasks[index].dates.length - 1
-                this.tasks[index].dates[dateIndex].end = Date.now();
-            }
-            this.changeCurrentIndex(index);
-        },
-        changeCurrentIndex(index) {
-            this.currentIndex = index;
-        },
-        toStringTime(totalTime) {
-            return (
-                Math.floor(totalTime / 3600).toLocaleString(undefined, {
-                    minimumIntegerDigits: 2,
-                }) +
-                ":" +
-                Math.floor((totalTime % 3600) / 60).toLocaleString(undefined, {
-                    minimumIntegerDigits: 2,
-                }) +
-                ":" +
-                ((totalTime % 3600) % 60).toLocaleString(undefined, {
-                    minimumIntegerDigits: 2,
-                })
-            )
-        },
-        taskTotalTime(index) {
-            let total = 0;
-            this.tasks[index].dates.map(date => {
-                if (date.end) {
-                    total = total + date.end - date.start
-                } else {
-                    total = total + Date.now() - date.start
-                }
-            });
-            return total
-        },
-        changeTaskName(value, index) {
-            this.tasks[index].name = value
+    addDescription(value, index) {
+      this.tasks[index].description.text = value;
+    },
+    toggleTask(index, type) {
+      if (type === "start") {
+        const tickingIndex = this.tasks.findIndex((el) => el.isTicking);
+        this.tasks[index].dates.push({ start: Date.now() });
+        this.tasks[index].isTicking = true;
+        this.counter(index);
+        if (tickingIndex !== -1) {
+          const dateIndex = this.tasks[tickingIndex].dates.length - 1;
+          this.tasks[tickingIndex].dates[dateIndex].end = Date.now();
+          this.tasks[tickingIndex].isTicking = false;
         }
+      } else {
+        this.tasks[index].isTicking = false;
+        const dateIndex = this.tasks[index].dates.length - 1;
+        this.tasks[index].dates[dateIndex].end = Date.now();
+      }
+      this.changeCurrentIndex(index);
     },
-})
+    counter(index) {
+        this.timer = setInterval(() => {
+            if (index !== -1) {this.tickingTime(index);
+            this.calculateTotalTime();
+        }
+        }, 100)
+    },
+    changeCurrentIndex(index) {
+      this.currentIndex = index;
+    },
+    toStringTime(time) {
+      const seconds = time / 1000;
+      return (
+        Math.floor(seconds / 3600).toLocaleString(undefined, {
+          minimumIntegerDigits: 2,
+        }) +
+        ":" +
+        Math.floor((seconds % 3600) / 60).toLocaleString(undefined, {
+          minimumIntegerDigits: 2,
+        }) +
+        ":" +
+        (Math.floor(seconds % 3600) % 60).toLocaleString(undefined, {
+          minimumIntegerDigits: 2,
+        })
+      );
+    },
+    taskTotalTime(index) {
+      let total = 0;
+      this.tasks[index].dates.map((date) => {
+        if (date.end) {
+          total = total + date.end - date.start;
+        } else {
+          total = total + Date.now() - date.start;
+        }
+      });
+      return total;
+    },
+    changeTaskName(value, index) {
+      this.tasks[index].name = value;
+    },
+    descriptionText(task) {
+      if (task.description.text) {
+        return task.description.text;
+      } else {
+        return this.dir === "rtl" ? "توضیحات..." : "Description...";
+      }
+    },
+    deleteTask(index) {
+       if (this.currentIndex > index){
+           this.currentIndex--;
+       }
+       clearInterval(this.timer)
+      this.tasks.splice(index, 1);
+
+    },
+    tickingTime(index) {
+      this.tasks[index].totalTime = this.toStringTime(
+        this.taskTotalTime(index)
+      );
+    },
+    calculateTotalTime() {
+      let totalTime = 0;
+      if (this.tasks)
+        this.tasks.map(
+          (task, index) => (totalTime = totalTime + this.taskTotalTime(index))
+        );
+      this.totalTime = this.toStringTime(totalTime);
+    },
+  },
+});
