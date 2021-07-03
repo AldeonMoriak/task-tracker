@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-between mt-1">
-    <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank" rel="noreferrer">
+    <a href="https://github.com/AldeonMoriak/task-tracker-website" target="_blank" rel="noreferrer">
       <img
         src="/github.png"
         alt="github link to task tracker"
