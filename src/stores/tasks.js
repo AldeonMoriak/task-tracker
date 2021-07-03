@@ -143,7 +143,11 @@ export const useTask = defineStore({
            this.currentIndex--;
        }
        clearInterval(this.timer)
+       this.timer = null
       this.tasks.splice(index, 1);
+      if (this.tasks.length < 1) {
+          this.calculateTotalTime()
+      }
 
     },
     tickingTime(index) {

@@ -137,7 +137,7 @@
     </div>
     <div v-else>
       <div
-        v-if="direction === 'rtl'"
+        v-if="store.dir === 'rtl'"
         class="text-gray-500 font-vazir text-xl lg:text-3xl font-bold text-center my-5"
       >تسکی که میخوای رو اضافه کن!</div>
       <div
