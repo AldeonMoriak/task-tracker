@@ -21,6 +21,6 @@ git checkout -b gh-pages
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f https://github.com/AldeonMoriak/task-tracker-webiste.git gh-pages
+git push -f https://github.com/AldeonMoriak/task-tracker-website.git gh-pages
 
 cd -
