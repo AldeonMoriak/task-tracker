@@ -19,12 +19,12 @@
           <button
             v-show="newTaskName && store.isFocused"
             class="focus:outline-none bg-gray-50 border-2 text-green-400 border-white rounded-2xl p-2 hover:text-green-700"
+            @click="insertTaskHandler"
           >
             <svg
               viewBox="0 0 24 24"
               fill="none"
               class="w-5 h-5"
-              @click="insertTaskHandler"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
@@ -60,7 +60,7 @@
   </header>
 </template>
 <script>
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onDeactivated, ref } from 'vue'
 import { useTask } from '../stores/tasks'
 export default defineComponent({
   setup() {
@@ -74,7 +74,18 @@ export default defineComponent({
     }
 
     const blurHandler = () => {
-      store.isFocused = false;
+      keyboardEventListener.value = setTimeout(() => {
+        store.isFocused = false;
+      }, 100)
+    }
+
+    onDeactivated(() => {
+      window.clearTimeout(keyboardEventListener.value)
+    })
+
+    const onClearInput = () => {
+      newTaskName.value = ''
+      taskInput.value.blur()
     }
 
     const insertTaskHandler = () => {
@@ -83,28 +94,6 @@ export default defineComponent({
       taskInput.value.blur();
     }
 
-    const keyListenerHandler = (event) => {
-      if (event.code.toLowerCase() === "slash" && !this.isFocused) {
-        this.$emit("key-pressed", "slash");
-        event.preventDefault();
-        this.focusInput();
-      } else if (event.code.toLowerCase() === "escape" && this.isFocused) {
-        event.preventDefault();
-        this.taskName = "";
-        this.unFocusInput();
-      }
-    }
-
-    const focusInput = () => {
-      if (this.$refs.taskInput) this.$refs.taskInput.focus();
-    }
-
-    onMounted(() => {
-      keyboardEventListener.value = addEventListener(
-        "keydown",
-        keyListenerHandler
-      );
-    })
 
     return {
       newTaskName,
@@ -112,7 +101,8 @@ export default defineComponent({
       focusHandler,
       blurHandler,
       insertTaskHandler,
-      taskInput
+      taskInput,
+      onClearInput
     }
   },
 });

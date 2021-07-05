@@ -21,6 +21,7 @@
               ref="descriptionModalText"
               v-model="descriptionValue"
               class="p-2 my-2 rounded-md bg-gray-200 w-full h-full"
+              @keydown.shift.enter="saveDescriptionHandler"
             />
             <div class="flex">
               <button
@@ -149,7 +150,7 @@
 </template>
 
 <script>
-import { watch, ref, defineComponent, onUnmounted, onMounted } from 'vue'
+import { ref, defineComponent, onUnmounted, computed } from 'vue'
 import { useTask } from '../stores/tasks'
 import Modal from './Modal.vue'
 
@@ -159,18 +160,19 @@ export default defineComponent({
     const taskStore = useTask()
 
     const clickedName = ref('')
-    const classObject = () => {
+    const classObject = computed(() => {
       return {
-        'text-right': store.dir === 'rtl',
-        'text-left': store.dir !== 'rtl'
+        'text-right': taskStore.dir === 'rtl',
+        'text-left': taskStore.dir !== 'rtl'
       }
-    }
+    })
 
 
     const descriptionValue = ref('')
     const taskDescriptionIndex = ref(-1)
     const descriptionModalText = ref(null)
     const timer = ref(null)
+    const modalRef = ref(null)
 
     const saveDescriptionHandler = () => {
       taskStore.addDescription(descriptionValue.value, taskDescriptionIndex.value)
@@ -207,7 +209,7 @@ export default defineComponent({
         classNames = classNames + " bg-green-100";
       }
       if (taskStore.selectedTaskIndex === index) {
-        const selected = " !ring-2 ring-gray-300";
+        const selected = " !ring-2 ring-purple-300";
         classNames = classNames + selected;
       } else {
         const ringColor = index % 2 === 0 ? " ring-2 ring-gray-50" : " ring-2 ring-white";
@@ -220,7 +222,6 @@ export default defineComponent({
       taskStore.aboutToChangeNameTaskIndex = index
       clickedName.value = name
       taskStore.showNameModal = true
-
     }
 
     return {
@@ -233,9 +234,9 @@ export default defineComponent({
       nameModalHandler,
       clickedName,
       classObject,
-      descriptionModalText
+      descriptionModalText,
+      modalRef
     }
-
   }
 })
 </script>

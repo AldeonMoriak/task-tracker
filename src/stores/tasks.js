@@ -23,7 +23,7 @@ export const useTask = defineStore({
       : false,
     showDescriptionModal: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore"))
-          .showDescriptionModal
+        .showDescriptionModal
       : false,
     whichKeyIsPressed: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).whichKeyIsPressed
@@ -35,14 +35,14 @@ export const useTask = defineStore({
       window.localStorage.getItem("taskStore")
     )
       ? JSON.parse(window.localStorage.getItem("taskStore"))
-          .aboutToChangeNameTaskIndex
+        .aboutToChangeNameTaskIndex
       : -1,
-      totalTime: JSON.parse(
+    totalTime: JSON.parse(
       window.localStorage.getItem("taskStore")) ? JSON.parse(
-      window.localStorage.getItem("taskStore")).totalTime : '00:00:00',
-      timer: JSON.parse(
+        window.localStorage.getItem("taskStore")).totalTime : '00:00:00',
+    timer: JSON.parse(
       window.localStorage.getItem("taskStore")) ? JSON.parse(
-      window.localStorage.getItem("taskStore")).timer : null,
+        window.localStorage.getItem("taskStore")).timer : null,
   }),
   // optional getters
   getters: {
@@ -52,15 +52,16 @@ export const useTask = defineStore({
       this.toStringTime(
         this.taskTotalTime(state.tasks.findIndex((task) => task.isTicking))
       ),
+    tasksLength: (state) => state.tasks.length,
   },
   // optional actions
   actions: {
     addTask(value) {
-      if (!value || value.length < 1) {
+      if (!value.trim() || value.trim().length < 1) {
         return;
       }
       this.tasks.push({
-        name: value,
+        name: value.trim(),
         dates: [],
         description: {
           isShown: false,
@@ -92,11 +93,12 @@ export const useTask = defineStore({
       this.changeCurrentIndex(index);
     },
     counter(index) {
-        this.timer = setInterval(() => {
-            if (index !== -1) {this.tickingTime(index);
-            this.calculateTotalTime();
+      this.timer = setInterval(() => {
+        if (index !== -1) {
+          this.tickingTime(index);
+          this.calculateTotalTime();
         }
-        }, 100)
+      }, 100)
     },
     changeCurrentIndex(index) {
       this.currentIndex = index;
@@ -139,14 +141,14 @@ export const useTask = defineStore({
       }
     },
     deleteTask(index) {
-       if (this.currentIndex > index){
-           this.currentIndex--;
-       }
-       clearInterval(this.timer)
-       this.timer = null
+      if (this.currentIndex > index) {
+        this.currentIndex--;
+      }
+      clearInterval(this.timer)
+      this.timer = null
       this.tasks.splice(index, 1);
       if (this.tasks.length < 1) {
-          this.calculateTotalTime()
+        this.calculateTotalTime()
       }
 
     },
