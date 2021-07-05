@@ -18,6 +18,7 @@
         >
           <button
             v-show="newTaskName && store.isFocused"
+            type="button"
             class="focus:outline-none bg-gray-50 border-2 text-green-400 border-white rounded-2xl p-2 hover:text-green-700"
             @click="insertTaskHandler"
           >
@@ -34,6 +35,7 @@
             </svg>
           </button>
           <button
+            type="button"
             v-show="!store.isFocused"
             class="focus:outline-none bg-gray-50 border-2 text-gray-400 border-white rounded-2xl p-2 cursor-default"
           >

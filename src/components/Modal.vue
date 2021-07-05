@@ -123,13 +123,9 @@ export default defineComponent({
   setup(props) {
 
     const store = useTask();
-    const name = ref('');
+    const name = ref(props.name);
     const inputRef = ref(null)
     const timer = ref(null)
-
-    watch(() => props.name, (first, second) => {
-      name.value = props.name;
-    })
 
     onUnmounted(() => {
       window.clearTimeout(timer.value)
@@ -142,29 +138,21 @@ export default defineComponent({
     }
 
     const focusHandler = () => {
-      timer.value = setTimeout(() => {
-        inputRef.value.focus();
-      }, 100);
+      inputRef.value.focus();
     }
 
     const saveNameHandler = () => {
-      store.tasks[store.getTaskNameIndex].name = name.value
+      store.tasks[store.getTaskNameIndex].name = name.value.trim()
       cancelHandler()
     }
-
-    watch(() => store.showNameModal,
-      () => {
-        if (store.showNameModal) {
-          focusHandler()
-        }
-      })
 
     return {
       name,
       store,
       inputRef,
       cancelHandler,
-      saveNameHandler
+      saveNameHandler,
+      focusHandler
     }
   },
 });

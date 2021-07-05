@@ -1,16 +1,16 @@
 <template>
   <div class="w-3/4 mx-auto pb-8">
-    <Modal v-show="store.showNameModal" :name="clickedName" ref="modalRef" />
+    <Modal v-if="store.showNameModal" :name="clickedName" ref="modalRef" />
     <div v-if="store.tasks && store.tasks.length > 0" class="mt-4 font-vazir">
       <teleport to="body">
         <div
-          v-show="store.showDescriptionModal"
+          v-if="store.showDescriptionModal"
           :dir="store.dir"
           class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
           aria-hidden="true"
         ></div>
         <div
-          v-show="store.showDescriptionModal"
+          v-if="store.showDescriptionModal"
           class="modal font-vazir absolute top-0 right-0 bottom-0 left-0 flex flex-col items-center justify-center"
         >
           <div
@@ -130,7 +130,7 @@
           <div
             v-bind:class="classObject"
             class="bg-gray-100 my-2 rounded-md p-2 transition ease-in-out duration-500 cursor-pointer text-gray-500 whitespace-pre-line"
-            v-show="task.description.isShown"
+            v-if="task.description.isShown"
             @click.stop="descriptionModalOpenHandler(task, index)"
           >{{ store.descriptionText(task) }}</div>
         </div>
@@ -219,9 +219,12 @@ export default defineComponent({
     }
 
     const nameModalHandler = (name, index) => {
+      taskStore.showNameModal = true
       taskStore.aboutToChangeNameTaskIndex = index
       clickedName.value = name
-      taskStore.showNameModal = true
+      setTimeout(() => {
+        modalRef.value.focusHandler()
+      }, 100);
     }
 
     return {
