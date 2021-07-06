@@ -17,6 +17,8 @@ export default defineConfig({
         orientation: 'portrait',
         background_color: '#ffffff',
         theme_color: '#027be3',
+        start_url: 'https://aldeonmoriak.github.io/task-tracker-website/',
+        prefer_related_applications: false,
         icons: [
           {
             src: 'icons/icon-128x128.png',

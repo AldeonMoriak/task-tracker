@@ -11,6 +11,7 @@
       v-if="store.totalTime !== '00:00:00'"
     >{{ (store.dir === "rtl" ? "زمان کلی:" : "Total Time:") + " " + store.totalTime }}</div>
     <Tasks ref="tasksRef" />
+    <ReloadPrompt />
     <BottomIcons />
   </div>
 </template>
@@ -20,6 +21,7 @@ import Tasks from "./components/Tasks.vue";
 import InputComponent from "./components/InputComponent.vue";
 import BottomIcons from './components/BottomIcons.vue'
 import TopIcons from './components/TopIcons.vue'
+import ReloadPrompt from './components/ReloadPrompt.vue'
 import { defineComponent, watch, onMounted, ref, onDeactivated } from 'vue'
 import { useTask } from './stores/tasks'
 
@@ -28,7 +30,8 @@ export default defineComponent({
     Tasks,
     InputComponent,
     BottomIcons,
-    TopIcons
+    TopIcons,
+    ReloadPrompt
   },
   setup() {
     const store = useTask()
