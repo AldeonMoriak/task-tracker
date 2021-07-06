@@ -17,7 +17,7 @@ const close = async () => {
 <template>
   <div
     v-if="offlineReady || needRefresh"
-    class="fixed bottom-0 m-8 p-10 border border-blue-300 rounded z-10 shadow bg-white"
+    class="fixed bottom-0 m-8 p-10 border border-blue-300 rounded z-10 shadow bg-white font-vazir"
     :class="{ 'text-left': store.dir === 'ltr', 'text-right': store.dir === 'rtl' }"
     role="alert"
   >
