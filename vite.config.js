@@ -10,9 +10,9 @@ export default defineConfig({
     WindiCSS(),
     VitePWA({
       manifest: {
-        name: `Epub Reader`,
-        short_name: `Epub Reader`,
-        description: `An ebook reader app`,
+        name: `Task Tracker`,
+        short_name: `Task Tracker`,
+        description: `An app to rule the tasks`,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
