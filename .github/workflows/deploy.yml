@@ -29,9 +29,9 @@ jobs:
       - name: Build dist
         run: |
           set -e,
-          npm run build --base=/task-tracker-website/,
+          npm run build --base=/task-tracker/,
           git init,
           git add .,
           git commit -m 'deploy',
           git checkout -b gh-pages,
-          git push -f https://github.com/AldeonMoriak/task-tracker-website.git gh-pages
+          git push -f https://github.com/AldeonMoriak/task-tracker.git gh-pages

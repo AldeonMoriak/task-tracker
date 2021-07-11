@@ -4,7 +4,7 @@
 set -e
 
 # build
-npm run build --base=/task-tracker-website/
+npm run build --base=/task-tracker/
 
 # navigate into the build output directory
 cd dist
@@ -21,6 +21,6 @@ git checkout -b gh-pages
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f https://github.com/AldeonMoriak/task-tracker-website.git gh-pages
+git push -f https://github.com/AldeonMoriak/task-tracker.git gh-pages
 
 cd -

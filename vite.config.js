@@ -17,7 +17,7 @@ export default defineConfig({
         orientation: 'portrait',
         background_color: '#ffffff',
         theme_color: '#027be3',
-        start_url: 'https://aldeonmoriak.github.io/task-tracker-website/',
+        start_url: 'https://aldeonmoriak.github.io/task-tracker/',
         prefer_related_applications: false,
         icons: [
           {
@@ -48,5 +48,5 @@ export default defineConfig({
         ]
       },
   })],
-  base: '/task-tracker-website/'
+  base: '/task-tracker/'
 });
