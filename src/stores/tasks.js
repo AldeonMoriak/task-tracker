@@ -48,10 +48,6 @@ export const useTask = defineStore({
   getters: {
     getTaskNameIndex: (state) => state.aboutToChangeNameTaskIndex,
     isTicking: (state) => state.tasks.some((task) => task.isTicking),
-    tickingTime: (state) =>
-      this.toStringTime(
-        this.taskTotalTime(state.tasks.findIndex((task) => task.isTicking))
-      ),
     tasksLength: (state) => state.tasks.length,
   },
   // optional actions
