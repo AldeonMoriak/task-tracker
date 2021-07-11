@@ -24,14 +24,19 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       # Runs a single command using the runners shell
       - name: Build dist
         run: |
-          set -e,
-          npm run build --base=/task-tracker/,
-          git init,
-          git add .,
-          git commit -m 'deploy',
-          git checkout -b gh-pages,
+          set -e
+          npm install
+          git config --global user.name 'Github Action'
+          git config --global user.email 'github@github.com'
+          npm run build --base=/task-tracker/
+          git init
+          git add .
+          git commit -m 'deploy'
+          git checkout -b gh-pages
           git push -f https://github.com/AldeonMoriak/task-tracker.git gh-pages
