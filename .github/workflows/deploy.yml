@@ -29,6 +29,7 @@ jobs:
       - name: Build dist
         run: |
           set -e
+          npm install
           npm run build --base=/task-tracker-website/
           git init
           git add .
