@@ -1,17 +1,9 @@
 import { createApp, h } from 'vue'
-import App from './pages/App.vue'
-import History from './pages/History.vue'
-import NotFound from './pages/NotFound.vue'
-import Signup from './pages/Signup.vue'
 import 'virtual:windi.css'
 import './assets/windi.css'
 import {pinia} from './stores'
+import routes from './routes'
 
-const routes = {
-  '/task-tracker/': App,
-  '/task-tracker/history': History,
-  '/task-tracker/signup': Signup,
-}
 
 const SimpleRouter = {
   data: () => ({
@@ -20,8 +12,17 @@ const SimpleRouter = {
 
   computed: {
     CurrentComponent() {
-      return routes[this.currentRoute] || NotFound
+      const matchingPage = routes[this.currentRoute] || '404'
+      import(`./pages/${matchingPage}.vue`).then((module) => {
+        return module;
+      });
     }
+  },
+
+   created () {
+    window.addEventListener('popstate', () => {
+      this.currentRoute = window.location.pathname
+    })
   },
 
   render() {

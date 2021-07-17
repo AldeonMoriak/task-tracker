@@ -18,6 +18,7 @@
     "windicss": "^3.1.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@vitejs/plugin-vue": "^1.2.2",
     "@vue/compiler-sfc": "^3.0.5",
     "vite": "^2.3.4",
