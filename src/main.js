@@ -1,33 +1,33 @@
-import { createApp, h } from 'vue'
-import 'virtual:windi.css'
-import './assets/windi.css'
-import {pinia} from './stores'
-import routes from './routes'
-
+import { createApp, h } from "vue";
+import "virtual:windi.css";
+import "./assets/windi.css";
+import { pinia } from "./stores";
+import routes from "./routes";
+import NotFound from "./pages/NotFound.vue";
 
 const SimpleRouter = {
   data: () => ({
-    currentRoute: window.location.pathname
+    currentRoute: window.location.pathname,
+    baseUrl: "localhost:6000/",
+    //'http://backend-task-tracker.herokuapp.com/'
   }),
 
   computed: {
     CurrentComponent() {
-      const matchingPage = routes[this.currentRoute] || '404'
-      import(`./pages/${matchingPage}.vue`).then((module) => {
-        return module;
-      });
-    }
+      const matchingPage = routes[this.currentRoute].component || NotFound;
+      return matchingPage;
+    },
   },
 
-   created () {
-    window.addEventListener('popstate', () => {
-      this.currentRoute = window.location.pathname
-    })
+  created() {
+    window.addEventListener("popstate", () => {
+      this.currentRoute = window.location.pathname;
+    });
   },
 
   render() {
-    return h(this.CurrentComponent)
-  }
-}
+    return h(this.CurrentComponent);
+  },
+};
 
-createApp(SimpleRouter).use(pinia).mount('#app')
+createApp(SimpleRouter).use(pinia).mount("#app");
