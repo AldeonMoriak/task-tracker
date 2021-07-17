@@ -17,13 +17,13 @@
 </template>
 
 <script>
-import Tasks from "./components/Tasks.vue";
-import InputComponent from "./components/InputComponent.vue";
-import BottomIcons from './components/BottomIcons.vue'
-import TopIcons from './components/TopIcons.vue'
-import ReloadPrompt from './components/ReloadPrompt.vue'
+import Tasks from "../components/Tasks.vue";
+import InputComponent from "../components/InputComponent.vue";
+import BottomIcons from '../components/BottomIcons.vue'
+import TopIcons from '../components/TopIcons.vue'
+import ReloadPrompt from '../components/ReloadPrompt.vue'
 import { defineComponent, watch, onMounted, ref, onDeactivated } from 'vue'
-import { useTask } from './stores/tasks'
+import { useTask } from '../stores/tasks'
 
 export default defineComponent({
   components: {
