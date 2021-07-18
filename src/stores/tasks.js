@@ -50,6 +50,7 @@ export const useTask = defineStore({
     getTaskNameIndex: (state) => state.aboutToChangeNameTaskIndex,
     isTicking: (state) => state.tasks.some((task) => task.isTicking),
     tasksLength: (state) => state.tasks.length,
+    isAuthenticated: (state) => !!state.token
   },
   // optional actions
   actions: {

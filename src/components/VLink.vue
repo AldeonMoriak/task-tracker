@@ -15,12 +15,7 @@ export default {
   },
   methods: {
     go() {
-      this.$root.currentRoute = "/task-tracker/" + this.href;
-      window.history.pushState(
-        null,
-        routes["/task-tracker/" + this.href].name,
-        "/task-tracker/" + this.href
-      );
+      this.$root.changeAddress(this.href);
     },
   },
 };
