@@ -6,6 +6,7 @@ export const useTask = defineStore({
   id: "tasksStore",
   // a function that returns a fresh state
   state: () => ({
+    token: window.localStorage.getItem('access_token'),
     tasks: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).tasks
       : [],
