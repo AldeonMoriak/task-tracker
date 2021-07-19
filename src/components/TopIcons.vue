@@ -1,12 +1,12 @@
 <template>
-  <div class="flex justify-between mt-1">
+  <div class="flex justify-end mt-1">
     <a href="https://github.com/AldeonMoriak/task-tracker" target="_blank" rel="noreferrer">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
         aria-hidden="true"
         focusable="false"
-        class="h-10 w-10 left-1 top-1 cursor-pointer bg-gray-50 text-gray-600 rounded-full opacity-50 p-1 m-2 hover:(bg-gray-200 text-gray-700 opacity-100)"
+        class="h-8 w-8 left-1 top-1 cursor-pointer bg-gray-50 text-gray-600 rounded-full opacity-50 p-1 m-2 hover:(bg-gray-200 text-gray-700 opacity-100)"
         style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);"
         preserveAspectRatio="xMidYMid meet"
         viewBox="0 0 256 250"
