@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import tasksApi from "../api/tasksApi";
 
 export const useTask = defineStore({
   // name of the store
@@ -7,9 +8,7 @@ export const useTask = defineStore({
   // a function that returns a fresh state
   state: () => ({
     token: window.localStorage.getItem('access_token'),
-    tasks: JSON.parse(window.localStorage.getItem("taskStore"))
-      ? JSON.parse(window.localStorage.getItem("taskStore")).tasks
-      : [],
+    tasks: [],
     dir: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).dir
       : "rtl",
@@ -54,6 +53,11 @@ export const useTask = defineStore({
   },
   // optional actions
   actions: {
+    async getTodayTasks() {
+      await tasksApi.getTodayTasks().then(res => {
+        console.log(res)
+      })
+    },
     addTask(value) {
       if (!value.trim() || value.trim().length < 1) {
         return;

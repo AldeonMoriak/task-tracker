@@ -150,7 +150,7 @@
 </template>
 
 <script>
-import { ref, defineComponent, onUnmounted, computed } from 'vue'
+import { ref, defineComponent, onUnmounted, computed, onMounted } from 'vue'
 import { useTask } from '../stores/tasks'
 import Modal from './Modal.vue'
 
@@ -178,6 +178,10 @@ export default defineComponent({
       taskStore.addDescription(descriptionValue.value, taskDescriptionIndex.value)
       cancelHandler()
     }
+
+    onMounted(async () => {
+      await taskStore.getTodayTasks();
+    })
 
     onUnmounted(() => {
       window.clearTimeout(timer.value)

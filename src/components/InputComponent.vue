@@ -9,7 +9,8 @@
           :placeholder="store.dir === 'rtl' ? 'عنوان تسک' : 'Enter a task...'"
           @focus="focusHandler"
           @blur="blurHandler"
-          class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full text-seven leading-seven font-vazir font-bold-body-weight flex py-4 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400"
+          class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full text-seven leading-seven font-vazir font-bold-body-weight flex py-4 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400 disabled:(bg-gray-100 cursor-wait)"
+          :disabled="loading"
           @keypress.enter="insertTaskHandler"
         />
         <div
@@ -17,7 +18,7 @@
           :class="{ 'left-0': store.dir === 'rtl', 'right-0': store.dir === 'ltr' }"
         >
           <button
-            v-show="newTaskName && store.isFocused"
+            v-show="newTaskName && store.isFocused && !loading"
             type="button"
             class="focus:outline-none bg-gray-50 border-2 text-green-400 border-white rounded-2xl p-2 hover:text-green-700"
             @click="insertTaskHandler"
@@ -34,9 +35,36 @@
               />
             </svg>
           </button>
+          <div
+            v-if="loading"
+            class="bg-gray-50 border-2 text-gray-400 border-white rounded-2xl p-2"
+          >
+            <svg
+              class="w-5 h-5 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                opacity="0.2"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                fill="currentColor"
+              />
+              <path
+                d="M12 22C17.5228 22 22 17.5228 22 12H19C19 15.866 15.866 19 12 19V22Z"
+                fill="currentColor"
+              />
+              <path
+                d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
           <button
             type="button"
-            v-show="!store.isFocused"
+            v-show="!store.isFocused && !loading"
             class="focus:outline-none bg-gray-50 border-2 text-gray-400 border-white rounded-2xl p-2 cursor-default"
           >
             <svg
@@ -64,12 +92,14 @@
 <script>
 import { defineComponent, onDeactivated, ref } from 'vue'
 import { useTask } from '../stores/tasks'
+import tasksApi from '../api/tasksApi'
 export default defineComponent({
   setup() {
     const newTaskName = ref('')
     const store = useTask()
     const keyboardEventListener = ref(null)
     const taskInput = ref(null)
+    const loading = ref(false);
 
     const focusHandler = () => {
       store.isFocused = true
@@ -90,10 +120,17 @@ export default defineComponent({
       taskInput.value.blur()
     }
 
-    const insertTaskHandler = () => {
-      store.addTask(newTaskName.value)
-      newTaskName.value = "";
-      taskInput.value.blur();
+    const insertTaskHandler = async () => {
+      // store.addTask(newTaskName.value)
+      loading.value = true;
+      await tasksApi.createTask({ title: newTaskName.value, parentId: null }).then(res => {
+        console.log(res)
+        loading.value = false
+        newTaskName.value = "";
+        taskInput.value.blur();
+      }).catch(err => {
+        loading.value = false
+      })
     }
 
 
@@ -104,7 +141,8 @@ export default defineComponent({
       blurHandler,
       insertTaskHandler,
       taskInput,
-      onClearInput
+      onClearInput,
+      loading,
     }
   },
 });
