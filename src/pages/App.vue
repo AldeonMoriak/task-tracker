@@ -6,7 +6,9 @@
   >
     <TotalTime />
     <TopIcons />
-    <InputComponent ref="taskInput" class="w-3/4 mx-auto" />
+    <SuggestTask>
+      <InputComponent ref="taskInput" class="w-3/4 mx-auto" />
+    </SuggestTask>
     <Tasks ref="tasksRef" />
     <ReloadPrompt />
     <BottomIcons />
@@ -16,12 +18,13 @@
 <script>
 import Tasks from "../components/Tasks.vue";
 import InputComponent from "../components/InputComponent.vue";
-import BottomIcons from '../components/BottomIcons.vue'
-import TopIcons from '../components/TopIcons.vue'
-import ReloadPrompt from '../components/ReloadPrompt.vue'
-import TotalTime from '../components/TotalTime.vue'
-import { defineComponent, watch, onMounted, ref, onDeactivated } from 'vue'
-import { useTask } from '../stores/tasks'
+import BottomIcons from "../components/BottomIcons.vue";
+import TopIcons from "../components/TopIcons.vue";
+import ReloadPrompt from "../components/ReloadPrompt.vue";
+import TotalTime from "../components/TotalTime.vue";
+import SuggestTask from "../components/SuggestTask.vue";
+import { defineComponent, watch, onMounted, ref, onDeactivated } from "vue";
+import { useTask } from "../stores/tasks";
 
 export default defineComponent({
   components: {
@@ -30,72 +33,101 @@ export default defineComponent({
     BottomIcons,
     TopIcons,
     ReloadPrompt,
-    TotalTime
+    TotalTime,
+    SuggestTask
   },
   setup() {
-    const store = useTask()
-    const taskInput = ref(null)
-    const keyboardEventListener = ref(null)
-    const tasksRef = ref(null)
-    let timer = null
+    const store = useTask();
+    const taskInput = ref(null);
+    const keyboardEventListener = ref(null);
+    const tasksRef = ref(null);
+    let timer = null;
 
-    onDeactivated(() => window.clearTimeout(timer))
+    onDeactivated(() => window.clearTimeout(timer));
 
     function bottomIconHandler(event) {
       store.whichKeyIsPressed = event.code.toLowerCase();
       timer = setTimeout(() => {
-        store.whichKeyIsPressed = '';
-      }, 100)
+        store.whichKeyIsPressed = "";
+      }, 100);
     }
 
     const keyListenerHandler = (event) => {
-      if (event.code.toLowerCase() === "slash" && !store.isFocused && !store.showNameModal && !store.showDescriptionModal) {
+      if (
+        event.code.toLowerCase() === "slash" &&
+        !store.isFocused &&
+        !store.showNameModal &&
+        !store.showDescriptionModal
+      ) {
         event.preventDefault();
-        bottomIconHandler(event)
-        taskInput.value.taskInput.focus()
+        bottomIconHandler(event);
+        taskInput.value.taskInput.focus();
       } else if (event.code.toLowerCase() === "escape") {
-        bottomIconHandler(event)
+        bottomIconHandler(event);
         if (store.isFocused) {
           event.preventDefault();
           taskInput.value.onClearInput();
         } else if (store.showNameModal) {
-          event.preventDefault()
-          tasksRef.value.modalRef.cancelHandler()
+          event.preventDefault();
+          tasksRef.value.modalRef.cancelHandler();
         } else if (store.showDescriptionModal) {
-          event.preventDefault()
-          tasksRef.value.cancelHandler()
+          event.preventDefault();
+          tasksRef.value.cancelHandler();
         } else if (store.selectedTaskIndex !== -1) {
-          event.preventDefault()
-          store.selectedTaskIndex = -1
+          event.preventDefault();
+          store.selectedTaskIndex = -1;
         }
-      } else if (event.code.toLowerCase() === 'arrowdown' && !store.isFocused && !store.showNameModal && !store.showDescriptionModal) {
+      } else if (
+        event.code.toLowerCase() === "arrowdown" &&
+        !store.isFocused &&
+        !store.showNameModal &&
+        !store.showDescriptionModal
+      ) {
         if (store.selectedTaskIndex !== -1) {
-          bottomIconHandler(event)
-          event.preventDefault()
-          store.selectedTaskIndex = store.selectedTaskIndex !== store.tasksLength - 1 ? store.selectedTaskIndex + 1 : 0;
+          bottomIconHandler(event);
+          event.preventDefault();
+          store.selectedTaskIndex =
+            store.selectedTaskIndex !== store.tasksLength - 1
+              ? store.selectedTaskIndex + 1
+              : 0;
         } else {
-          bottomIconHandler(event)
-          event.preventDefault()
-          store.selectedTaskIndex = 0
+          bottomIconHandler(event);
+          event.preventDefault();
+          store.selectedTaskIndex = 0;
         }
-      } else if (event.code.toLowerCase() === 'arrowup' && !store.isFocused && !store.showNameModal && !store.showDescriptionModal) {
+      } else if (
+        event.code.toLowerCase() === "arrowup" &&
+        !store.isFocused &&
+        !store.showNameModal &&
+        !store.showDescriptionModal
+      ) {
         if (store.selectedTaskIndex !== -1) {
-          bottomIconHandler(event)
-          event.preventDefault()
-          store.selectedTaskIndex = store.selectedTaskIndex !== 0 ? store.selectedTaskIndex - 1 : store.tasksLength - 1;
+          bottomIconHandler(event);
+          event.preventDefault();
+          store.selectedTaskIndex =
+            store.selectedTaskIndex !== 0
+              ? store.selectedTaskIndex - 1
+              : store.tasksLength - 1;
         } else {
-          bottomIconHandler(event)
-          event.preventDefault()
-          store.selectedTaskIndex = store.tasksLength - 1
+          bottomIconHandler(event);
+          event.preventDefault();
+          store.selectedTaskIndex = store.tasksLength - 1;
         }
-      } else if (event.code.toLowerCase() === 'space' && !store.isFocused && !store.showNameModal && !store.showDescriptionModal) {
+      } else if (
+        event.code.toLowerCase() === "space" &&
+        !store.isFocused &&
+        !store.showNameModal &&
+        !store.showDescriptionModal
+      ) {
         if (store.selectedTaskIndex !== -1) {
-          bottomIconHandler(event)
-          event.preventDefault()
-          store.tasks[store.selectedTaskIndex].isTicking ? store.toggleTask(store.selectedTaskIndex, 'stop') : store.toggleTask(store.selectedTaskIndex, 'start')
+          bottomIconHandler(event);
+          event.preventDefault();
+          store.tasks[store.selectedTaskIndex].isTicking
+            ? store.toggleTask(store.selectedTaskIndex, "stop")
+            : store.toggleTask(store.selectedTaskIndex, "start");
         }
       }
-    }
+    };
 
     onMounted(() => {
       keyboardEventListener.value = addEventListener(
@@ -103,18 +135,18 @@ export default defineComponent({
         keyListenerHandler
       );
       if (store.isTicking)
-        store.counter(store.tasks.findIndex(task => task.isTicking))
-    })
+        store.counter(store.tasks.findIndex((task) => task.isTicking));
+    });
 
     watch(
       () => store.$state,
       (state) => {
         // persist the whole state to the local storage whenever it changes
-        localStorage.setItem('taskStore', JSON.stringify(state))
+        localStorage.setItem("taskStore", JSON.stringify(state));
       },
       { deep: true }
-    )
-    return { store, taskInput, tasksRef }
-  }
+    );
+    return { store, taskInput, tasksRef };
+  },
 });
 </script>
