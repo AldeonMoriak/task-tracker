@@ -18,9 +18,13 @@ export default {
     return instance.post('createTask', {
       title: payload.title,
       parentId: payload.parentId,
+      id: payload.id
     });
   },
   async getTodayTasks() {
     return instance.get('getTodayTasks');
+  },
+  async getTasksNames() {
+    return instance.get('getTasksNames');
   }
 }

@@ -6,9 +6,7 @@
   >
     <TotalTime />
     <TopIcons />
-    <SuggestTask>
-      <InputComponent ref="taskInput" class="w-3/4 mx-auto" />
-    </SuggestTask>
+    <InputComponent ref="taskInput" class="w-3/4 mx-auto" />
     <Tasks ref="tasksRef" />
     <ReloadPrompt />
     <BottomIcons />
@@ -22,7 +20,6 @@ import BottomIcons from "../components/BottomIcons.vue";
 import TopIcons from "../components/TopIcons.vue";
 import ReloadPrompt from "../components/ReloadPrompt.vue";
 import TotalTime from "../components/TotalTime.vue";
-import SuggestTask from "../components/SuggestTask.vue";
 import { defineComponent, watch, onMounted, ref, onDeactivated } from "vue";
 import { useTask } from "../stores/tasks";
 
@@ -34,7 +31,6 @@ export default defineComponent({
     TopIcons,
     ReloadPrompt,
     TotalTime,
-    SuggestTask
   },
   setup() {
     const store = useTask();

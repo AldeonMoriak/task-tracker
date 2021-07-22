@@ -1,6 +1,6 @@
 <template>
   <header class="flex mt-4 items-center font-vazir">
-    <div class="relative w-full mb-24 flex items-center justify-center">
+    <div class="relative w-full mb-24 flex flex-col items-center justify-center">
       <div class="max-w-24rem absolute top-0 w-full">
         <input
           type="text"
@@ -86,11 +86,45 @@
           </button>
         </div>
       </div>
+      <div class="flex justify-center mt-16" v-if="store.isFocused && store.tasksNames.length > 0">
+        <ul
+          class="absolute z-10 w-full bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm max-w-24rem mx-auto flex justify-center flex-col"
+          tabindex="-1"
+          role="listbox"
+          aria-labelledby="listbox-label"
+          aria-activedescendant="listbox-option-3"
+        >
+          <!--
+        Select option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation.
+
+        Highlighted: "text-white bg-indigo-600", Not Highlighted: "text-gray-900"
+          -->
+          <li
+            class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9"
+            id="listbox-option-0"
+            role="option"
+            v-for="task in names"
+            :key="task.id"
+            @click="clickNameHandler(task)"
+          >
+            <div class="flex items-center">
+              <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
+              <span class="font-normal ml-3 block truncate">{{ task.title }}</span>
+            </div>
+
+            <!--
+          Checkmark, only display for selected option.
+
+          Highlighted: "text-white", Not Highlighted: "text-indigo-600"
+            -->
+          </li>
+        </ul>
+      </div>
     </div>
   </header>
 </template>
 <script>
-import { defineComponent, onDeactivated, ref } from 'vue'
+import { defineComponent, onDeactivated, ref, computed } from 'vue'
 import { useTask } from '../stores/tasks'
 import tasksApi from '../api/tasksApi'
 export default defineComponent({
@@ -100,6 +134,9 @@ export default defineComponent({
     const keyboardEventListener = ref(null)
     const taskInput = ref(null)
     const loading = ref(false);
+    const timer = ref(null)
+
+    const names = computed(() => store.tasksNames.filter(task => task.title.includes(newTaskName.value)))
 
     const focusHandler = () => {
       store.isFocused = true
@@ -108,6 +145,13 @@ export default defineComponent({
     const blurHandler = () => {
       keyboardEventListener.value = setTimeout(() => {
         store.isFocused = false;
+      }, 100)
+    }
+
+    const clickNameHandler = (task) => {
+      timer.value = setTimeout(() => {
+        taskInput.value.focus()
+        newTaskName.value = task.title
       }, 100)
     }
 
@@ -122,12 +166,16 @@ export default defineComponent({
 
     const insertTaskHandler = async () => {
       // store.addTask(newTaskName.value)
+      const candidate = store.tasksNames.find(task => task.title === newTaskName.value)
+      let id = null;
+      if (candidate) id = candidate.id
       loading.value = true;
-      await tasksApi.createTask({ title: newTaskName.value, parentId: null }).then(res => {
+      await tasksApi.createTask({ title: newTaskName.value, parentId: null, id }).then(res => {
         console.log(res)
         loading.value = false
         newTaskName.value = "";
         taskInput.value.blur();
+        store.getTasksNames();
       }).catch(err => {
         loading.value = false
       })
@@ -143,6 +191,8 @@ export default defineComponent({
       taskInput,
       onClearInput,
       loading,
+      names,
+      clickNameHandler,
     }
   },
 });

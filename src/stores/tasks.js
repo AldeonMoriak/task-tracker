@@ -9,6 +9,7 @@ export const useTask = defineStore({
   state: () => ({
     showTotalTime: true,
     token: window.localStorage.getItem('access_token'),
+    tasksNames: [],
     tasks: [],
     dir: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).dir
@@ -50,13 +51,25 @@ export const useTask = defineStore({
     getTaskNameIndex: (state) => state.aboutToChangeNameTaskIndex,
     isTicking: (state) => state.tasks.some((task) => task.isTicking),
     tasksLength: (state) => state.tasks.length,
-    isAuthenticated: (state) => !!state.token
+    isAuthenticated: (state) => !!state.token,
   },
   // optional actions
   actions: {
     async getTodayTasks() {
       await tasksApi.getTodayTasks().then(res => {
-        console.log(res)
+        let tasks = JSON.parse(JSON.stringify(res.data))
+        tasks.map((task, index) => {
+          task.description = {
+            isShown: false,
+            text: res.data[index].description
+          }
+        });
+        this.tasks = tasks;
+      })
+    },
+    async getTasksNames() {
+      await tasksApi.getTasksNames().then(res => {
+        this.tasksNames = res.data;
       })
     },
     addTask(value) {

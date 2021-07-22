@@ -49,7 +49,7 @@
         >
           <div class="flex justify-between">
             <div class="flex">
-              <span class @click.stop="nameModalHandler(task.name, index)">{{ task.name }}</span>
+              <span class @click.stop="nameModalHandler(task.name, index)">{{ task.title }}</span>
               <svg
                 v-if="!task.description.isShown"
                 id="chevron-down"
@@ -181,6 +181,7 @@ export default defineComponent({
 
     onMounted(async () => {
       await taskStore.getTodayTasks();
+      await taskStore.getTasksNames();
     })
 
     onUnmounted(() => {
