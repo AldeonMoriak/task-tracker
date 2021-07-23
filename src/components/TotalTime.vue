@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed w-40 mb-24 flex justify-end transition duration-500 ease-in-out"
+    class="fixed w-40 mb-24 flex justify-end transition duration-500 ease-in-out z-10"
     :class="store.showTotalTime ? 'show' : '-mt-40 hide'"
     v-if="store.totalTime !== '00:00:00'"
   >

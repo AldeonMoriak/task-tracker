@@ -1,6 +1,6 @@
 <template>
-  <header class="flex mt-4 items-center font-vazir">
-    <div class="relative w-full mb-24 flex flex-col items-center justify-center">
+  <header class="relative flex mt-4 mb-24 items-center font-vazir z-10">
+    <div class="relative w-full flex flex-col items-center justify-center">
       <div class="max-w-24rem absolute top-0 w-full">
         <input
           type="text"
@@ -86,7 +86,10 @@
           </button>
         </div>
       </div>
-      <div class="flex justify-center mt-16" v-if="store.isFocused && store.tasksNames.length > 0">
+      <div
+        class="absolute flex justify-center mt-32  w-full max-w-24rem"
+        v-if="store.isFocused && store.tasksNames.length > 0"
+      >
         <ul
           class="absolute z-10 w-full bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm max-w-24rem mx-auto flex justify-center flex-col"
           tabindex="-1"
@@ -136,23 +139,23 @@ export default defineComponent({
     const loading = ref(false);
     const timer = ref(null)
 
-    const names = computed(() => store.tasksNames.filter(task => task.title.includes(newTaskName.value)))
+    const names = computed(() => store.tasksNames.filter(task => task.title.toLowerCase().includes(newTaskName.value.toLowerCase())))
 
     const focusHandler = () => {
       store.isFocused = true
     }
 
     const blurHandler = () => {
-      keyboardEventListener.value = setTimeout(() => {
+      setTimeout(() => {
         store.isFocused = false;
-      }, 100)
+      }, 100);
     }
 
     const clickNameHandler = (task) => {
-      timer.value = setTimeout(() => {
+      setTimeout(() => {
         taskInput.value.focus()
         newTaskName.value = task.title
-      }, 100)
+      }, 150);
     }
 
     onDeactivated(() => {
@@ -174,8 +177,9 @@ export default defineComponent({
         console.log(res)
         loading.value = false
         newTaskName.value = "";
-        taskInput.value.blur();
+        store.isFocused = false;
         store.getTasksNames();
+        store.getTodayTasks();
       }).catch(err => {
         loading.value = false
       })

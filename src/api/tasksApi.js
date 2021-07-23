@@ -8,10 +8,25 @@ const instance = axios.create({
   validateStatus: function (status) {
     return status >= 200 && status < 501
   },
-  headers: {
-    Authorization: `Bearer ${window.localStorage.getItem('access_token')}`
+});
+
+instance.interceptors.request.use(
+  (config) => {
+    let token = localStorage.getItem('access_token');
+
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${ token }`;
+      config.headers['Content-Type'] = 'application/json; charset=utf-8';
+      config.headers['Accept'] = '*/*';
+    }
+
+    return config;
+  }, 
+
+  (error) => {
+    return Promise.reject(error);
   }
-})
+);
 
 export default {
   async createTask(payload) {

@@ -2,13 +2,15 @@ import axios from 'axios'
 
 const BASE_URL = 'http://backend-task-tracker.herokuapp.com/auth/'
 
-// const BASE_URL = 'https://localhost:44359/v1'
+
+// const BASE_URL = 'https://localhost:6000/auth'
 const instance = axios.create({
     baseURL: BASE_URL,
     validateStatus: function (status) {
         return status >= 200 && status < 501
     },
-})
+});
+
 
 export default {
   async authenticate (credentials, url) {

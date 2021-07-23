@@ -58,11 +58,19 @@ export const useTask = defineStore({
     async getTodayTasks() {
       await tasksApi.getTodayTasks().then(res => {
         let tasks = JSON.parse(JSON.stringify(res.data))
-        tasks.map((task, index) => {
-          task.description = {
+        tasks.map((object, index) => {
+          object.task.description = {
             isShown: false,
-            text: res.data[index].description
+            text: object.task.description
           }
+          object.task.totalTime = "00:00:00"
+        object.subTasks.map((sub, index) => {
+          sub.description = {
+            isShown: false,
+            text: sub.description
+          }
+          sub.totalTime = "00:00:00"
+        })
         });
         this.tasks = tasks;
       })
@@ -78,7 +86,7 @@ export const useTask = defineStore({
       }
       this.tasks.push({
         name: value.trim(),
-        dates: [],
+        date: [],
         description: {
           isShown: false,
           text: "",
@@ -93,18 +101,18 @@ export const useTask = defineStore({
     toggleTask(index, type) {
       if (type === "start") {
         const tickingIndex = this.tasks.findIndex((el) => el.isTicking);
-        this.tasks[index].dates.push({ start: Date.now() });
+        this.tasks[index].date.push({ start: Date.now() });
         this.tasks[index].isTicking = true;
         this.counter(index);
         if (tickingIndex !== -1) {
-          const dateIndex = this.tasks[tickingIndex].dates.length - 1;
-          this.tasks[tickingIndex].dates[dateIndex].end = Date.now();
+          const dateIndex = this.tasks[tickingIndex].date.length - 1;
+          this.tasks[tickingIndex].date[dateIndex].end = Date.now();
           this.tasks[tickingIndex].isTicking = false;
         }
       } else {
         this.tasks[index].isTicking = false;
-        const dateIndex = this.tasks[index].dates.length - 1;
-        this.tasks[index].dates[dateIndex].end = Date.now();
+        const dateIndex = this.tasks[index].date.length - 1;
+        this.tasks[index].date[dateIndex].end = Date.now();
       }
       this.changeCurrentIndex(index);
     },
@@ -137,7 +145,7 @@ export const useTask = defineStore({
     },
     taskTotalTime(index) {
       let total = 0;
-      this.tasks[index].dates.map((date) => {
+      this.tasks[index].date.map((date) => {
         if (date.end) {
           total = total + date.end - date.start;
         } else {
