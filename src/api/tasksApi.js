@@ -15,13 +15,13 @@ instance.interceptors.request.use(
     let token = localStorage.getItem('access_token');
 
     if (token) {
-      config.headers['Authorization'] = `Bearer ${ token }`;
+      config.headers['Authorization'] = `Bearer ${token}`;
       config.headers['Content-Type'] = 'application/json; charset=utf-8';
       config.headers['Accept'] = '*/*';
     }
 
     return config;
-  }, 
+  },
 
   (error) => {
     return Promise.reject(error);
@@ -41,5 +41,8 @@ export default {
   },
   async getTasksNames() {
     return instance.get('getTasksNames');
+  },
+  async renameTask(title, id) {
+    return instance.post('renameTask', { title, id });
   }
 }

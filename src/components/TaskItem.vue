@@ -2,7 +2,7 @@
   <div class="flex flex-col p-4 rounded mb-4 list-complete-item shadow-md">
     <div class="flex justify-between">
       <div class="flex">
-        <span class @click.stop="nameModalHandler(task.name, index)">{{ task.title }}</span>
+        <span class @click.stop="nameModalHandler(task)">{{ task.title }}</span>
         <svg
           v-if="!task.description.isShown"
           id="chevron-down"
@@ -87,7 +87,7 @@
       @click.stop="descriptionModalOpenHandler(task, index)"
     >{{ store.descriptionText(task) }}</div>
     <slot></slot>
-    <div v-for="subtask in subtasks">
+    <div v-for="subtask in subtasks" :key="subtask.id">
       <TaskItemComponent class="bg-gray-100" :task="subtask" :index="subtask.id"></TaskItemComponent>
     </div>
   </div>
@@ -115,7 +115,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-  console.log(props.subtasks)
+    console.log(props.subtasks)
     const store = useTask();
     const classObject = computed(() => {
       return {
@@ -124,21 +124,22 @@ export default defineComponent({
       }
     });
 
-    const taskName = ref('');
-
-    const createSubTask = async (id) => {
-      await tasksApi.createTask({ title: taskName.value, parentId: id }).then(res => {
-        console.log(res)
-      }).catch(err => {
-        console.log(err)
-      });
+    const nameModalHandler = (task) => {
+      taskStore.showNameModal = true
+      clickedName.value = task.title
+      setTimeout(() => {
+        modalRef.value.focusHandler()
+      }, 100);
     }
+
+
+    const taskName = ref('');
 
     return {
       store,
       classObject,
       taskName,
-      createSubTask
+      nameModalHandler,
     }
   }
 })

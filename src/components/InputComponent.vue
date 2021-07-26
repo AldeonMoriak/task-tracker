@@ -1,5 +1,5 @@
 <template>
-  <header class="relative flex mt-4 mb-24 items-center font-vazir z-10">
+  <header class="relative flex mt-4 mb-24 items-center font-vazir z-30">
     <div class="relative w-full flex flex-col items-center justify-center">
       <div class="max-w-24rem absolute top-0 w-full">
         <input
@@ -86,24 +86,16 @@
           </button>
         </div>
       </div>
-      <div
-        class="absolute flex justify-center mt-32  w-full max-w-24rem"
-        v-if="store.isFocused && store.tasksNames.length > 0"
-      >
+      <div class="absolute flex justify-center mt-32 w-full max-w-24rem">
         <ul
-          class="absolute z-10 w-full bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm max-w-24rem mx-auto flex justify-center flex-col"
+          class="absolute z-30 w-full bg-white shadow-lg rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm max-w-24rem mx-auto flex justify-center flex-col"
           tabindex="-1"
           role="listbox"
           aria-labelledby="listbox-label"
           aria-activedescendant="listbox-option-3"
         >
-          <!--
-        Select option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation.
-
-        Highlighted: "text-white bg-indigo-600", Not Highlighted: "text-gray-900"
-          -->
           <li
-            class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9"
+            class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:(text-indigo-900 bg-indigo-200)"
             id="listbox-option-0"
             role="option"
             v-for="task in names"
@@ -111,15 +103,8 @@
             @click="clickNameHandler(task)"
           >
             <div class="flex items-center">
-              <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
               <span class="font-normal ml-3 block truncate">{{ task.title }}</span>
             </div>
-
-            <!--
-          Checkmark, only display for selected option.
-
-          Highlighted: "text-white", Not Highlighted: "text-indigo-600"
-            -->
           </li>
         </ul>
       </div>

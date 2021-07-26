@@ -64,13 +64,14 @@ export const useTask = defineStore({
             text: object.task.description
           }
           object.task.totalTime = "00:00:00"
-        object.subTasks.map((sub, index) => {
-          sub.description = {
-            isShown: false,
-            text: sub.description
-          }
-          sub.totalTime = "00:00:00"
-        })
+          object.task.showSubTaskInput = false
+          object.subTasks.map((sub, index) => {
+            sub.description = {
+              isShown: false,
+              text: sub.description
+            }
+            sub.totalTime = "00:00:00"
+          })
         });
         this.tasks = tasks;
       })
@@ -154,8 +155,12 @@ export const useTask = defineStore({
       });
       return total;
     },
-    changeTaskName(value, index) {
-      this.tasks[index].name = value;
+    async renameTask(title, id) {
+      await tasksApi.renameTask(title, id).then(res => {
+        this.tasks[this.getTaskNameIndex].task.title = title
+        this.showNameModal = false
+        this.aboutToChangeNameTaskIndex = -1
+      }).catch(err => console.log(err))
     },
     descriptionText(task) {
       if (task.description.text) {

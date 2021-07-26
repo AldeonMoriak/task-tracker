@@ -1,11 +1,11 @@
 <template>
   <div
     :dir="store.dir"
-    :class="[store.tasks.length < 10 ? 'h-screen' : 'h-full', 'mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-blue-50']"
+    :class="[store.tasks.length < 10 ? 'h-full' : 'h-full', 'mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-blue-50']"
   >
     <TotalTime />
     <TopIcons />
-    
+
     <InputComponent ref="taskInput" class="w-3/4 mx-auto" />
     <Tasks ref="tasksRef" />
     <ReloadPrompt />

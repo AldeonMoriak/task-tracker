@@ -114,16 +114,10 @@ import { ref, defineComponent, watch, onUnmounted } from 'vue'
 import { useTask } from '../stores/tasks'
 
 export default defineComponent({
-  props: {
-    name: {
-      type: String,
-      required: true
-    }
-  },
   setup(props) {
 
     const store = useTask();
-    const name = ref(props.name);
+    const name = ref(store.tasks[store.getTaskNameIndex].task.title);
     const inputRef = ref(null)
     const timer = ref(null)
 
@@ -143,7 +137,7 @@ export default defineComponent({
 
     const saveNameHandler = () => {
       store.tasks[store.getTaskNameIndex].name = name.value.trim()
-      cancelHandler()
+      name.value = ''
     }
 
     return {

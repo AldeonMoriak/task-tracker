@@ -1,6 +1,6 @@
 <template>
   <div class="w-3/4 mx-auto pb-8">
-    <Modal v-if="store.showNameModal" :name="clickedName" ref="modalRef" />
+    <Modal v-if="store.showNameModal" ref="modalRef" />
     <div v-if="store.tasks && store.tasks.length > 0" class="mt-4 font-vazir">
       <teleport to="body">
         <div
@@ -51,8 +51,9 @@
         >
           <template v-slot:default>
             <div
+              v-if="!task.task.showSubTaskInput"
               class="text-gray-500 flex text-sm my-4 cursor-pointer"
-              @click.stop="createSubTask(task.task.id)"
+              @click.stop="clickCreateSubTaskHandler(task.task.id, index)"
             >
               <div>
                 <svg
@@ -70,6 +71,9 @@
                 </svg>
               </div>
               <p>{{ store.dir === 'rtl' ? 'ایجاد تسک' : 'Create a subtask' }}</p>
+            </div>
+            <div v-else>
+              <sub-task-input :taskIndex="index" :task-id="task.task.id" />
             </div>
           </template>
         </TaskItem>
@@ -120,10 +124,11 @@
 import { ref, defineComponent, onUnmounted, computed, onMounted } from 'vue'
 import { useTask } from '../stores/tasks'
 import Modal from './Modal.vue'
+import SubTaskInput from './SubTaskInput.vue'
 import TaskItem from './TaskItem.vue'
 
 export default defineComponent({
-  components: { Modal, TaskItem },
+  components: { Modal, TaskItem, SubTaskInput },
   setup() {
     const taskStore = useTask()
 
@@ -187,13 +192,22 @@ export default defineComponent({
       return classNames;
     }
 
-    const nameModalHandler = (name, index) => {
-      taskStore.showNameModal = true
-      taskStore.aboutToChangeNameTaskIndex = index
-      clickedName.value = name
-      setTimeout(() => {
-        modalRef.value.focusHandler()
-      }, 100);
+    const clickCreateSubTaskHandler = (id, index) => {
+      const { task } = taskStore.tasks.find(task => task.task.id === id)
+      task.showSubTaskInput = true
+      taskStore.tasks.map((task, idx) => {
+        if (idx !== index) {
+          task.task.showSubTaskInput = false
+        }
+      })
+    }
+
+    const createSubTask = async (id) => {
+      await tasksApi.createTask({ title: taskName.value, parentId: id }).then(res => {
+        console.log(res)
+      }).catch(err => {
+        console.log(err)
+      });
     }
 
     return {
@@ -203,11 +217,12 @@ export default defineComponent({
       descriptionModalOpenHandler,
       cancelHandler,
       classNames,
-      nameModalHandler,
       clickedName,
       descriptionModalText,
       modalRef,
-      loading
+      loading,
+      createSubTask,
+      clickCreateSubTaskHandler
     }
   }
 })
