@@ -1,7 +1,7 @@
 <template>
   <div
     :dir="store.dir"
-    :class="[store.tasks.length < 10 ? 'h-full' : 'h-full', 'mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-blue-50']"
+    :class="[store.tasks.length < 5 ? 'h-screen' : 'h-full', 'mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-blue-50']"
   >
     <TotalTime />
     <TopIcons />
@@ -11,12 +11,16 @@
     <ReloadPrompt />
     <BottomIcons />
   </div>
+  <div :dir="store.dir === 'rtl' ? 'ltr' : 'rtl'" class="mx-auto max-w-screen-md text-center">
+    <CheckButton />
+  </div>
 </template>
 
 <script>
 import Tasks from "../components/Tasks.vue";
 import InputComponent from "../components/InputComponent.vue";
 import BottomIcons from "../components/BottomIcons.vue";
+import CheckButton from "../components/CheckButton.vue";
 import TopIcons from "../components/TopIcons.vue";
 import ReloadPrompt from "../components/ReloadPrompt.vue";
 import TotalTime from "../components/TotalTime.vue";
@@ -31,6 +35,7 @@ export default defineComponent({
     TopIcons,
     ReloadPrompt,
     TotalTime,
+    CheckButton
   },
   setup() {
     const store = useTask();
@@ -125,7 +130,8 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
+    onMounted(async () => {
+      await store.getUserInfo();
       keyboardEventListener.value = addEventListener(
         "keydown",
         keyListenerHandler

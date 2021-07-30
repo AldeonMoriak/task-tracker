@@ -8,9 +8,12 @@ export const useTask = defineStore({
   // a function that returns a fresh state
   state: () => ({
     showTotalTime: true,
-    token: window.localStorage.getItem('access_token'),
+    token: window.localStorage.getItem("access_token"),
     tasksNames: [],
+    subtasksNames: [],
     tasks: [],
+    isCheckedIn: false,
+    userName: '',
     dir: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).dir
       : "rtl",
@@ -25,7 +28,7 @@ export const useTask = defineStore({
       : false,
     showDescriptionModal: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore"))
-        .showDescriptionModal
+          .showDescriptionModal
       : false,
     whichKeyIsPressed: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).whichKeyIsPressed
@@ -37,14 +40,14 @@ export const useTask = defineStore({
       window.localStorage.getItem("taskStore")
     )
       ? JSON.parse(window.localStorage.getItem("taskStore"))
-        .aboutToChangeNameTaskIndex
+          .aboutToChangeNameTaskIndex
       : -1,
-    totalTime: JSON.parse(
-      window.localStorage.getItem("taskStore")) ? JSON.parse(
-        window.localStorage.getItem("taskStore")).totalTime : '00:00:00',
-    timer: JSON.parse(
-      window.localStorage.getItem("taskStore")) ? JSON.parse(
-        window.localStorage.getItem("taskStore")).timer : null,
+    totalTime: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).totalTime
+      : "00:00:00",
+    timer: JSON.parse(window.localStorage.getItem("taskStore"))
+      ? JSON.parse(window.localStorage.getItem("taskStore")).timer
+      : null,
   }),
   // optional getters
   getters: {
@@ -56,29 +59,44 @@ export const useTask = defineStore({
   // optional actions
   actions: {
     async getTodayTasks() {
-      await tasksApi.getTodayTasks().then(res => {
-        let tasks = JSON.parse(JSON.stringify(res.data))
+      await tasksApi.getTodayTasks().then((res) => {
+        console.log(res);
+        let tasks = JSON.parse(JSON.stringify(res.data));
         tasks.map((object, index) => {
           object.task.description = {
             isShown: false,
-            text: object.task.description
-          }
-          object.task.totalTime = "00:00:00"
-          object.task.showSubTaskInput = false
+            text: object.task.description,
+          };
+          object.task.totalTime = "00:00:00";
+          object.task.showSubTaskInput = false;
           object.subTasks.map((sub, index) => {
             sub.description = {
               isShown: false,
-              text: sub.description
-            }
-            sub.totalTime = "00:00:00"
-          })
+              text: sub.description,
+            };
+            sub.totalTime = "00:00:00";
+          });
         });
         this.tasks = tasks;
-      })
+      });
     },
     async getTasksNames() {
-      await tasksApi.getTasksNames().then(res => {
+      await tasksApi.getTasksNames().then((res) => {
         this.tasksNames = res.data;
+      });
+    },
+    async getSubtasksNames() {
+      await tasksApi.getSubtasksNames().then((res) => {
+        this.subtasksNames = res.data;
+      });
+    },
+    async check() {
+      return tasksApi.check();
+    },
+    async getUserInfo() {
+      return tasksApi.getUserInfo().then(res => {
+        this.userName  = res.data.name;
+        this.isCheckedIn = res.data.isCheckedIn
       })
     },
     addTask(value) {
@@ -99,23 +117,30 @@ export const useTask = defineStore({
     addDescription(value, index) {
       this.tasks[index].description.text = value;
     },
-    toggleTask(index, type) {
-      if (type === "start") {
-        const tickingIndex = this.tasks.findIndex((el) => el.isTicking);
-        this.tasks[index].date.push({ start: Date.now() });
-        this.tasks[index].isTicking = true;
-        this.counter(index);
-        if (tickingIndex !== -1) {
-          const dateIndex = this.tasks[tickingIndex].date.length - 1;
-          this.tasks[tickingIndex].date[dateIndex].end = Date.now();
-          this.tasks[tickingIndex].isTicking = false;
+    async toggleTask(id, parentTaskId) {
+      // if (type === "start") {
+      //   const tickingIndex = this.tasks.findIndex((el) => el.isTicking);
+      //   this.tasks[index].date.push({ start: Date.now() });
+      //   this.tasks[index].isTicking = true;
+      //   this.counter(index);
+      //   if (tickingIndex !== -1) {
+      //     const dateIndex = this.tasks[tickingIndex].date.length - 1;
+      //     this.tasks[tickingIndex].date[dateIndex].end = Date.now();
+      //     this.tasks[tickingIndex].isTicking = false;
+      //   }
+      // } else {
+      //   this.tasks[index].isTicking = false;
+      //   const dateIndex = this.tasks[index].date.length - 1;
+      //   this.tasks[index].date[dateIndex].end = Date.now();
+      // }
+      // this.changeCurrentIndex(index);
+      await tasksApi.addTimeToTask(id).then((res) => {
+        if (parentTaskId) {
+          const { task, subTasks } = this.tasks.map((task) => {
+            task.task.id === parentTaskId;
+          });
         }
-      } else {
-        this.tasks[index].isTicking = false;
-        const dateIndex = this.tasks[index].date.length - 1;
-        this.tasks[index].date[dateIndex].end = Date.now();
-      }
-      this.changeCurrentIndex(index);
+      });
     },
     counter(index) {
       this.timer = setInterval(() => {
@@ -123,7 +148,7 @@ export const useTask = defineStore({
           this.tickingTime(index);
           this.calculateTotalTime();
         }
-      }, 100)
+      }, 100);
     },
     changeCurrentIndex(index) {
       this.currentIndex = index;
@@ -156,11 +181,14 @@ export const useTask = defineStore({
       return total;
     },
     async renameTask(title, id) {
-      await tasksApi.renameTask(title, id).then(res => {
-        this.tasks[this.getTaskNameIndex].task.title = title
-        this.showNameModal = false
-        this.aboutToChangeNameTaskIndex = -1
-      }).catch(err => console.log(err))
+      await tasksApi
+        .renameTask(title, id)
+        .then((res) => {
+          this.tasks[this.getTaskNameIndex].task.title = title;
+          this.showNameModal = false;
+          this.aboutToChangeNameTaskIndex = -1;
+        })
+        .catch((err) => console.log(err));
     },
     descriptionText(task) {
       if (task.description.text) {
@@ -173,13 +201,12 @@ export const useTask = defineStore({
       if (this.currentIndex > index) {
         this.currentIndex--;
       }
-      clearInterval(this.timer)
-      this.timer = null
+      clearInterval(this.timer);
+      this.timer = null;
       this.tasks.splice(index, 1);
       if (this.tasks.length < 1) {
-        this.calculateTotalTime()
+        this.calculateTotalTime();
       }
-
     },
     tickingTime(index) {
       this.tasks[index].totalTime = this.toStringTime(

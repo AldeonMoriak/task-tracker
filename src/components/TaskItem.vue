@@ -88,7 +88,7 @@
     >{{ store.descriptionText(task) }}</div>
     <slot></slot>
     <div v-for="subtask in subtasks" :key="subtask.id">
-      <TaskItemComponent class="bg-gray-100" :task="subtask" :index="subtask.id"></TaskItemComponent>
+      <TaskItemComponent class="bg-gray-100" :task="subtask" :index="task.id"></TaskItemComponent>
     </div>
   </div>
 </template>
@@ -123,6 +123,13 @@ export default defineComponent({
         'text-left': store.dir !== 'rtl'
       }
     });
+    
+    const toggleTaskHandler = () => {
+      if (props.index === props.task.id) {
+        store.add
+      }
+
+    }
 
     const nameModalHandler = (task) => {
       taskStore.showNameModal = true

@@ -41,7 +41,7 @@
       <transition-group name="list-complete" tag="div">
         <TaskItem
           v-for="(task, index) in store.tasks"
-          :index="index"
+          :index="task.task.id"
           :task="task.task"
           :id="index"
           :key="index"
@@ -150,6 +150,7 @@ export default defineComponent({
       loading.value = true;
       await taskStore.getTodayTasks();
       await taskStore.getTasksNames();
+      await taskStore.getSubtasksNames();
       loading.value = false
     })
 

@@ -1,5 +1,5 @@
 <template>
-  <header class="relative flex mt-4 mb-24 items-center font-vazir z-30">
+  <header ref="target" class="relative flex mt-4 mb-24 items-center font-vazir z-30">
     <div class="relative w-full flex flex-col items-center justify-center">
       <div class="max-w-24rem absolute top-0 w-full">
         <input
@@ -8,7 +8,6 @@
           v-model="newTaskName"
           :placeholder="store.dir === 'rtl' ? 'عنوان تسک' : 'Enter a task...'"
           @focus="focusHandler"
-          @blur="blurHandler"
           class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full text-seven leading-seven font-vazir font-bold-body-weight flex py-4 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400 disabled:(bg-gray-100 cursor-wait)"
           :disabled="loading"
           @keypress.enter="insertTaskHandler"
@@ -93,6 +92,7 @@
           role="listbox"
           aria-labelledby="listbox-label"
           aria-activedescendant="listbox-option-3"
+          v-if="store.isFocused && names.length > 0"
         >
           <li
             class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:(text-indigo-900 bg-indigo-200)"
@@ -115,6 +115,8 @@
 import { defineComponent, onDeactivated, ref, computed } from 'vue'
 import { useTask } from '../stores/tasks'
 import tasksApi from '../api/tasksApi'
+import { onClickOutside } from '@vueuse/core'
+
 export default defineComponent({
   setup() {
     const newTaskName = ref('')
@@ -123,6 +125,9 @@ export default defineComponent({
     const taskInput = ref(null)
     const loading = ref(false);
     const timer = ref(null)
+    const target = ref(null)
+    
+    onClickOutside(target, () => blurHandler());
 
     const names = computed(() => store.tasksNames.filter(task => task.title.toLowerCase().includes(newTaskName.value.toLowerCase())))
 
@@ -182,6 +187,7 @@ export default defineComponent({
       loading,
       names,
       clickNameHandler,
+      target
     }
   },
 });

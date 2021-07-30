@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex mt-4 mb-24 items-center font-vazir z-10">
+  <div ref="target" class="relative flex mt-4 mb-24 items-center font-vazir z-10">
     <div class="relative w-full flex flex-col items-center justify-center">
       <div class="max-w-24rem absolute top-0 w-full">
         <div class="flex">
@@ -9,7 +9,6 @@
             v-model="newTaskName"
             :placeholder="store.dir === 'rtl' ? 'عنوان تسک ثانویه' : 'Enter a subtask...'"
             @focus="focusHandler"
-            @blur="isFocused = false"
             class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full font-vazir font-bold-body-weight flex py-2 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400 focus:(ring-1 ring-blue-300) disabled:(bg-gray-100 cursor-wait)"
             :disabled="loading"
             @keypress.enter="insertTaskHandler"
@@ -64,25 +63,6 @@
               </svg>
             </div>
           </div>
-          <button
-            type="button"
-            class="text-gray-500 p-2 rounded-1 hover:text-gray-700 z-20 absolute right-0"
-            @click="store.tasks[taskIndex].task.showSubTaskInput = false"
-          >
-            <svg
-              width="24"
-              height="24"
-              class="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.2253 4.81108C5.83477 4.42056 5.20161 4.42056 4.81108 4.81108C4.42056 5.20161 4.42056 5.83477 4.81108 6.2253L10.5858 12L4.81114 17.7747C4.42062 18.1652 4.42062 18.7984 4.81114 19.1889C5.20167 19.5794 5.83483 19.5794 6.22535 19.1889L12 13.4142L17.7747 19.1889C18.1652 19.5794 18.7984 19.5794 19.1889 19.1889C19.5794 18.7984 19.5794 18.1652 19.1889 17.7747L13.4142 12L19.189 6.2253C19.5795 5.83477 19.5795 5.20161 19.189 4.81108C18.7985 4.42056 18.1653 4.42056 17.7748 4.81108L12 10.5858L6.2253 4.81108Z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
         </div>
       </div>
       <div
@@ -102,7 +82,7 @@
         Highlighted: "text-white bg-indigo-600", Not Highlighted: "text-gray-900"
           -->
           <li
-            class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9"
+            class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:(text-indigo-900 bg-indigo-200)"
             id="listbox-option-0"
             role="option"
             v-for="task in names"
@@ -129,6 +109,7 @@
 import { defineComponent, onDeactivated, ref, computed } from 'vue'
 import { useTask } from '../stores/tasks'
 import tasksApi from '../api/tasksApi'
+import { onClickOutside } from '@vueuse/core'
 export default defineComponent({
   props: {
     taskId: {
@@ -147,9 +128,12 @@ export default defineComponent({
     const taskInput = ref(null)
     const loading = ref(false);
     const timer = ref(null)
-    const isFocused = ref(false)
+    let isFocused = ref(false)
+    const target = ref(null)
 
-    const names = computed(() => store.tasksNames.filter(task => task.title.toLowerCase().includes(newTaskName.value.toLowerCase())))
+    onClickOutside(target, () => store.tasks[props.taskIndex].task.showSubTaskInput = false)
+
+    const names = computed(() => store.subtasksNames.filter(task => task.parent.id === props.taskId && task.title.toLowerCase().includes(newTaskName.value.toLowerCase())))
 
     const focusHandler = () => {
       isFocused.value = true
@@ -157,7 +141,7 @@ export default defineComponent({
 
     const blurHandler = () => {
       setTimeout(() => {
-        // store.isFocused = false;
+        isFocused.value = false;
       }, 100);
     }
 
@@ -184,7 +168,7 @@ export default defineComponent({
       // if (candidate) id = candidate.id
       loading.value = true;
       await tasksApi.createTask({ title: newTaskName.value, parentId: props.taskId, id }).then(res => {
-        store.getTasksNames();
+        store.getSubtasksNames();
         store.getTodayTasks();
         console.log(res)
         loading.value = false
@@ -207,7 +191,8 @@ export default defineComponent({
       loading,
       names,
       clickNameHandler,
-      isFocused
+      isFocused,
+      target
     }
   },
 });
