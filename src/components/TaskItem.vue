@@ -45,7 +45,7 @@
             class="h-6 w-6 mx-5 text-green-600 bg-green-200 rounded-full hover:(bg-green-300 text-green-800) cursor-pointer transition ease-in duration-300"
             viewBox="0 0 24 24"
             fill="none"
-            @click="store.toggleTask(index, 'start')"
+            @click="toggleTaskHandler"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path d="M15 12.3301L9 16.6603L9 8L15 12.3301Z" fill="currentColor" />
@@ -56,7 +56,7 @@
             class="transition ease-in-out duration-500 h-6 w-6 mx-5 text-pink-600 bg-pink-200 rounded-full hover:(bg-pink-300 text-pink-800) cursor-pointer"
             viewBox="0 0 24 24"
             fill="none"
-            @click="store.toggleTask(index, 'stop')"
+            @click="toggleTaskHandler"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path d="M11 7H8V17H11V7Z" fill="currentColor" />
@@ -69,7 +69,7 @@
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          @click.stop="store.deleteTask(index)"
+          @click.stop="store.deleteTask(id)"
         >
           <path
             stroke-linecap="round"
@@ -84,11 +84,11 @@
       v-bind:class="classObject"
       class="bg-gray-100 my-2 rounded-md p-2 transition ease-in-out duration-500 cursor-pointer text-gray-500 whitespace-pre-line"
       v-if="task.description.isShown"
-      @click.stop="descriptionModalOpenHandler(task, index)"
+      @click.stop="descriptionModalOpenHandler(task, id)"
     >{{ store.descriptionText(task) }}</div>
     <slot></slot>
     <div v-for="subtask in subtasks" :key="subtask.id">
-      <TaskItemComponent class="bg-gray-100" :task="subtask" :index="task.id"></TaskItemComponent>
+      <TaskItemComponent class="bg-gray-100" :task="subtask" :id="task.id"></TaskItemComponent>
     </div>
   </div>
 </template>
@@ -105,7 +105,7 @@ export default defineComponent({
       type: Object,
       default: () => null
     },
-    index: {
+    id: {
       type: Number,
       default: -1
     },
@@ -125,10 +125,11 @@ export default defineComponent({
     });
     
     const toggleTaskHandler = () => {
-      if (props.index === props.task.id) {
-        store.add
+      if (props.id === props.task.id) {
+        store.toggleTask(props.id, false);
+      } else {
+        store.toggleTask(props.id, props.task.id);
       }
-
     }
 
     const nameModalHandler = (task) => {
@@ -147,6 +148,7 @@ export default defineComponent({
       classObject,
       taskName,
       nameModalHandler,
+      toggleTaskHandler
     }
   }
 })

@@ -139,6 +139,7 @@ export const useTask = defineStore({
           const { task, subTasks } = this.tasks.map((task) => {
             task.task.id === parentTaskId;
           });
+          debugger;
         }
       });
     },

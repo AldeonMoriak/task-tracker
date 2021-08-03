@@ -41,7 +41,6 @@
       <transition-group name="list-complete" tag="div">
         <TaskItem
           v-for="(task, index) in store.tasks"
-          :index="task.task.id"
           :task="task.task"
           :id="index"
           :key="index"
