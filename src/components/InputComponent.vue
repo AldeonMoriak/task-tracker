@@ -87,7 +87,7 @@
       </div>
       <div class="absolute flex justify-center mt-32 w-full max-w-24rem">
         <ul
-          class="absolute z-30 w-full bg-white shadow-lg rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm max-w-24rem mx-auto flex justify-center flex-col"
+          class="absolute z-30 w-full max-h-64 overflow-y-scroll bg-white shadow-lg rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm max-w-24rem mx-auto flex justify-center flex-col"
           tabindex="-1"
           role="listbox"
           aria-labelledby="listbox-label"

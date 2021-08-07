@@ -28,7 +28,7 @@ export const useTask = defineStore({
       : false,
     showDescriptionModal: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore"))
-          .showDescriptionModal
+        .showDescriptionModal
       : false,
     whichKeyIsPressed: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).whichKeyIsPressed
@@ -40,7 +40,7 @@ export const useTask = defineStore({
       window.localStorage.getItem("taskStore")
     )
       ? JSON.parse(window.localStorage.getItem("taskStore"))
-          .aboutToChangeNameTaskIndex
+        .aboutToChangeNameTaskIndex
       : -1,
     totalTime: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).totalTime
@@ -63,6 +63,7 @@ export const useTask = defineStore({
         console.log(res);
         let tasks = JSON.parse(JSON.stringify(res.data));
         tasks.map((object, index) => {
+          object.task.loading = false;
           object.task.description = {
             isShown: false,
             text: object.task.description,
@@ -70,6 +71,7 @@ export const useTask = defineStore({
           object.task.totalTime = "00:00:00";
           object.task.showSubTaskInput = false;
           object.subTasks.map((sub, index) => {
+            sub.loading = false;
             sub.description = {
               isShown: false,
               text: sub.description,
@@ -95,7 +97,7 @@ export const useTask = defineStore({
     },
     async getUserInfo() {
       return tasksApi.getUserInfo().then(res => {
-        this.userName  = res.data.name;
+        this.userName = res.data.name;
         this.isCheckedIn = res.data.isCheckedIn
       })
     },
@@ -118,28 +120,46 @@ export const useTask = defineStore({
       this.tasks[index].description.text = value;
     },
     async toggleTask(id, parentTaskId) {
-      // if (type === "start") {
-      //   const tickingIndex = this.tasks.findIndex((el) => el.isTicking);
-      //   this.tasks[index].date.push({ start: Date.now() });
-      //   this.tasks[index].isTicking = true;
-      //   this.counter(index);
-      //   if (tickingIndex !== -1) {
-      //     const dateIndex = this.tasks[tickingIndex].date.length - 1;
-      //     this.tasks[tickingIndex].date[dateIndex].end = Date.now();
-      //     this.tasks[tickingIndex].isTicking = false;
-      //   }
-      // } else {
-      //   this.tasks[index].isTicking = false;
-      //   const dateIndex = this.tasks[index].date.length - 1;
-      //   this.tasks[index].date[dateIndex].end = Date.now();
-      // }
-      // this.changeCurrentIndex(index);
+      let parentTask = null;
+      let childTask = null;
+      if (parentTaskId) parentTask = this.tasks.find(task => task.task.id === parentTaskId)
+      else parentTask = this.tasks.find(task => task.task.id === id);
+      if (parentTaskId) {
+        childTask = parentTask.subTasks.find(subTask => subTask.id === id);
+        childTask.loading = true;
+      }
+      parentTask.task.loading = true;
       await tasksApi.addTimeToTask(id).then((res) => {
+        parentTask.task.loading = false;
         if (parentTaskId) {
-          const { task, subTasks } = this.tasks.map((task) => {
-            task.task.id === parentTaskId;
-          });
-          debugger;
+          const tickingSubTask = parentTask.subTasks.find((subTask) => subTask.id !== id && subTask.isTicking);
+          // if there is a task and a ticking subtask just change the ticking state of subtask
+          childTask.isTicking = !childTask.isTicking
+          if (tickingSubTask) {
+            tickingSubTask.loading = true;
+            tasksApi.addTimeToTask(tickingSubTask.id).then(res => {
+              tickingSubTask.loading = false;
+              tickingSubTask.isTicking = !tickingSubTask.isTicking
+              childTask.loading = false;
+            });
+          } else if(parentTask.task.isTicking) {
+            childTask.loading = false;
+            parentTask.task.loading = false;
+          } else {
+            childTask.loading = false;
+            parentTask.task.isTicking = !parentTask.task.isTicking;
+            parentTask.task.loading = false;
+            //parentTask.task.loading = !parentTask.task.loading
+          }
+        } else {
+          const tickingSubTask = parentTask.subTasks.find(subTask => subTask.isTicking);
+          debugger
+          if (tickingSubTask) {
+            this.toggleTask(tickingSubTask.id, parentTask.task.id)
+          } else {
+            parentTask.task.isTicking = !parentTask.task.isTicking
+            parentTask.task.loading = false;
+          }
         }
       });
     },

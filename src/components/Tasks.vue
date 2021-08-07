@@ -42,7 +42,7 @@
         <TaskItem
           v-for="(task, index) in store.tasks"
           :task="task.task"
-          :id="index"
+          :id="task.task.id"
           :key="index"
           :subtasks="task.subTasks"
           @click="store.selectedTaskIndex = index"

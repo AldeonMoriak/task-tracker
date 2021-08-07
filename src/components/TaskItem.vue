@@ -38,7 +38,7 @@
             task.totalTime
           }}
         </span>
-        <div class="flex justify-between">
+        <div v-if="!task.loading">
           <svg
             v-if="!task.isTicking"
             aria-label="play button"
@@ -61,6 +61,21 @@
           >
             <path d="M11 7H8V17H11V7Z" fill="currentColor" />
             <path d="M13 17H16V7H13V17Z" fill="currentColor" />
+          </svg>
+        </div>
+        <div v-else>
+          <svg
+            width="24"
+            height="24"
+            class="animate-spin h-6 w-6 mx-5 text-gray-600 bg-gray-200 rounded-full hover:(bg-green-300 text-green-800) cursor-pointer transition ease-in duration-300"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z"
+              fill="currentColor"
+            />
           </svg>
         </div>
         <svg
@@ -126,9 +141,9 @@ export default defineComponent({
     
     const toggleTaskHandler = () => {
       if (props.id === props.task.id) {
-        store.toggleTask(props.id, false);
+        store.toggleTask(props.task.id, false);
       } else {
-        store.toggleTask(props.id, props.task.id);
+        store.toggleTask(props.task.id, props.id);
       }
     }
 
