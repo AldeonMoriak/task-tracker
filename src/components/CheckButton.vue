@@ -19,7 +19,7 @@
             style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);"
             preserveAspectRatio="xMidYMid meet"
             viewBox="0 0 32 32"
-            class="cursor-pointer w-5 h-5"
+            :class="[store.isCheckedIn ? 'bg-green-100' : 'bg-red-100', 'cursor-pointer w-6 h-6  rounded-full']"
           >
             <path
               d="M7 5.21a.77.77 0 0 1-.46-1.38A15.46 15.46 0 0 1 16 1c2.66 0 6.48.45 9.5 2.62a.77.77 0 0 1 .18 1.07a.78.78 0 0 1-1.08.17A15 15 0 0 0 16 2.53a14 14 0 0 0-8.5 2.52a.74.74 0 0 1-.5.16z"

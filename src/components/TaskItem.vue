@@ -105,16 +105,20 @@
     <div v-for="subtask in subtasks" :key="subtask.id">
       <TaskItemComponent class="bg-gray-100" :task="subtask" :id="task.id"></TaskItemComponent>
     </div>
+  <Alert :type="alertType" :message="alertMessage" v-if="showAlert" />
   </div>
 </template>
 
 <script>
-import { defineComponent, computed, ref } from 'vue'
+import { defineComponent, computed, ref, onDeactivated } from 'vue'
 import { useTask } from '../stores/tasks'
-import tasksApi from '../api/tasksApi'
+import Alert from '../components/Alert.vue'
 
 export default defineComponent({
   name: 'TaskItemComponent',
+  components: {
+    Alert
+  },
   props: {
     task: {
       type: Object,
@@ -132,18 +136,39 @@ export default defineComponent({
   setup(props) {
     console.log(props.subtasks)
     const store = useTask();
+    const alertType = ref('')
+    const alertMessage = ref('')
+    const showAlert = ref(false)
+    let timeout = null;
     const classObject = computed(() => {
       return {
         'text-right': store.dir === 'rtl',
         'text-left': store.dir !== 'rtl'
       }
     });
+
+    onDeactivated(() => clearTimeout(timeout));
     
-    const toggleTaskHandler = () => {
+    const showError = (error) => {
+      alertType.value = error.type;
+      alertMessage.value = error.message;
+      showAlert.value = true;
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        showAlert.value = false;
+        alertType.value = ''
+        alertMessage.value = ''
+      }, 6000)
+
+    }
+    
+    const toggleTaskHandler = async () => {
       if (props.id === props.task.id) {
-        store.toggleTask(props.task.id, false);
+        const error = await store.toggleTask(props.task.id, false);
+        if(error) showError(error)
       } else {
-        store.toggleTask(props.task.id, props.id);
+        const error = await store.toggleTask(props.task.id, props.id);
+        if(error) showError(error)
       }
     }
 
@@ -163,7 +188,10 @@ export default defineComponent({
       classObject,
       taskName,
       nameModalHandler,
-      toggleTaskHandler
+      toggleTaskHandler,
+      alertType,
+      alertMessage,
+      showAlert
     }
   }
 })

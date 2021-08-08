@@ -2,7 +2,7 @@
   <!-- Alert Success -->
   <transition name="fade" :dir="store.dir" v-if="type === 'success'">
     <div
-      class="fixed right-2 bottom-2 bg-green-200 px-6 py-4 my-4 rounded-md text-lg flex items-center mx-auto max-w-96 w-1/4 transition duration-500 ease-out z-10"
+      class="fixed right-2 bottom-2 bg-green-200 px-6 py-4 my-4 rounded-md text-lg flex items-center mx-auto max-w-96 w-3/4 lg:w-1/4 transition duration-500 ease-out z-10"
     >
       <svg viewBox="0 0 24 24" class="text-green-600 w-5 h-5 sm:w-5 sm:h-5 ml-3">
         <path
@@ -17,7 +17,7 @@
   <transition name="fade" :dir="store.dir" v-else-if="type === 'error'">
     <!-- Alert Error -->
     <div
-      class="fixed right-2 bottom-2 bg-red-200 px-6 py-4 my-4 rounded-md text-lg flex items-center mx-auto max-w-96 w-1/4 transition duration-500 ease-out z-10"
+      class="fixed right-2 bottom-2 bg-red-200 px-6 py-4 my-4 rounded-md text-lg flex items-center mx-auto max-w-96 w-3/4 lg:w-1/4 transition duration-500 ease-out z-10"
     >
       <svg viewBox="0 0 24 24" class="text-red-600 w-5 h-5 sm:w-5 sm:h-5 ml-3">
         <path
@@ -32,7 +32,7 @@
   <transition name="fade" :dir="store.dir" v-else-if="type === 'warning'">
     <!-- Alert Warning -->
     <div
-      class="fixed right-2 bottom-2 bg-yellow-200 px-6 py-4 my-4 rounded-md text-lg flex items-center mx-auto max-w-96 w-1/4 transition duration-500 ease-out z-10"
+      class="fixed right-2 bottom-2 bg-yellow-200 px-6 py-4 my-4 rounded-md text-lg flex items-center mx-auto max-w-96 w-3/4 lg:w-1/4 transition duration-500 ease-out z-10"
     >
       <svg viewBox="0 0 24 24" class="text-yellow-600 w-5 h-5 sm:w-5 sm:h-5 ml-3">
         <path
@@ -47,7 +47,7 @@
   <transition name="fade" :dir="store.dir" v-else>
     <!-- Alert Info -->
     <div
-      class="fixed right-2 bottom-2 bg-blue-200 px-6 py-4 my-4 rounded-md text-lg flex items-center mx-auto max-w-96 w-1/4 transition duration-500 ease-out z-10"
+      class="fixed right-2 bottom-2 bg-blue-200 px-6 py-4 my-4 rounded-md text-lg flex items-center mx-auto max-w-96 w-3/4 lg:w-1/4 transition duration-500 ease-out z-10"
     >
       <svg viewBox="0 0 24 24" class="text-blue-600 w-5 h-5 sm:w-5 sm:h-5 ml-3">
         <path

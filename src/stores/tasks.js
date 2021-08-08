@@ -129,39 +129,49 @@ export const useTask = defineStore({
         childTask.loading = true;
       }
       parentTask.task.loading = true;
-      await tasksApi.addTimeToTask(id).then((res) => {
-        parentTask.task.loading = false;
-        if (parentTaskId) {
-          const tickingSubTask = parentTask.subTasks.find((subTask) => subTask.id !== id && subTask.isTicking);
-          // if there is a task and a ticking subtask just change the ticking state of subtask
-          childTask.isTicking = !childTask.isTicking
-          if (tickingSubTask) {
-            tickingSubTask.loading = true;
-            tasksApi.addTimeToTask(tickingSubTask.id).then(res => {
-              tickingSubTask.loading = false;
-              tickingSubTask.isTicking = !tickingSubTask.isTicking
+      const error = await tasksApi.addTimeToTask(id).then((res) => {
+        if (res.status < 300) {
+          parentTask.task.loading = false;
+          if (parentTaskId) {
+            const tickingSubTask = parentTask.subTasks.find((subTask) => subTask.id !== id && subTask.isTicking);
+            // if there is a task and a ticking subtask just change the ticking state of subtask
+            childTask.isTicking = !childTask.isTicking
+            if (tickingSubTask) {
+              tickingSubTask.loading = true;
+              tasksApi.addTimeToTask(tickingSubTask.id).then(res => {
+                tickingSubTask.loading = false;
+                tickingSubTask.isTicking = !tickingSubTask.isTicking
+                childTask.loading = false;
+              });
+            } else if (parentTask.task.isTicking) {
               childTask.loading = false;
-            });
-          } else if(parentTask.task.isTicking) {
-            childTask.loading = false;
-            parentTask.task.loading = false;
+              parentTask.task.loading = false;
+            } else {
+              childTask.loading = false;
+              parentTask.task.isTicking = !parentTask.task.isTicking;
+              parentTask.task.loading = false;
+              //parentTask.task.loading = !parentTask.task.loading
+            }
           } else {
-            childTask.loading = false;
-            parentTask.task.isTicking = !parentTask.task.isTicking;
-            parentTask.task.loading = false;
-            //parentTask.task.loading = !parentTask.task.loading
+            const tickingSubTask = parentTask.subTasks.find(subTask => subTask.isTicking);
+            if (tickingSubTask) {
+              this.toggleTask(tickingSubTask.id, parentTask.task.id)
+            } else {
+              parentTask.task.isTicking = !parentTask.task.isTicking
+              parentTask.task.loading = false;
+            }
           }
         } else {
-          const tickingSubTask = parentTask.subTasks.find(subTask => subTask.isTicking);
-          debugger
-          if (tickingSubTask) {
-            this.toggleTask(tickingSubTask.id, parentTask.task.id)
-          } else {
-            parentTask.task.isTicking = !parentTask.task.isTicking
-            parentTask.task.loading = false;
-          }
+          return { message: res.data.message, type: 'error' }
         }
+      }).catch(err => {
+        console.log(error);
+      }).finally(() => {
+        parentTask.task.loading = false;
+        if (childTask)
+          childTask.loading = false;
       });
+      if (error) return error
     },
     counter(index) {
       this.timer = setInterval(() => {
