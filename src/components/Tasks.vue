@@ -11,10 +11,33 @@
         ></div>
         <div
           v-if="store.showDescriptionModal"
-          class="modal font-vazir absolute top-0 right-0 bottom-0 left-0 flex flex-col items-center justify-center"
+          class="
+            modal
+            font-vazir
+            absolute
+            top-0
+            right-0
+            bottom-0
+            left-0
+            flex flex-col
+            items-center
+            justify-center
+          "
         >
           <div
-            class="flex flex-col items-center justify-center p-5 w-72 h-72 rounded-md bg-white min-w-max max-w-md h-1/3"
+            class="
+              flex flex-col
+              items-center
+              justify-center
+              p-5
+              w-72
+              h-72
+              rounded-md
+              bg-white
+              min-w-max
+              max-w-md
+              h-1/3
+            "
           >
             <textarea
               :dir="store.dir"
@@ -27,13 +50,34 @@
               <button
                 type="button"
                 @click="saveDescriptionHandler"
-                class="rounded-md bg-green-200 text-green-800 px-2 py-1 hover:(bg-green-300 text-green-900)"
-              >{{ store.dir === 'rtl' ? 'ثبت' : 'Save' }}</button>
+                class="
+                  rounded-md
+                  bg-green-200
+                  text-green-800
+                  px-2
+                  py-1
+                  hover:(bg-green-300
+                  text-green-900)
+                "
+              >
+                {{ store.dir === "rtl" ? "ثبت" : "Save" }}
+              </button>
               <button
                 type="button"
                 @click="cancelHandler"
-                class="mx-2 rounded-md bg-red-200 text-red-800 px-2 py-1 hover:(bg-red-300 text-red-900)"
-              >{{ store.dir === 'rtl' ? 'بازگشت' : 'Cancel' }}</button>
+                class="
+                  mx-2
+                  rounded-md
+                  bg-red-200
+                  text-red-800
+                  px-2
+                  py-1
+                  hover:(bg-red-300
+                  text-red-900)
+                "
+              >
+                {{ store.dir === "rtl" ? "بازگشت" : "Cancel" }}
+              </button>
             </div>
           </div>
         </div>
@@ -69,7 +113,9 @@
                   />
                 </svg>
               </div>
-              <p>{{ store.dir === 'rtl' ? 'ایجاد تسک' : 'Create a subtask' }}</p>
+              <p>
+                {{ store.dir === "rtl" ? "ایجاد تسک" : "Create a subtask" }}
+              </p>
             </div>
             <div v-else>
               <sub-task-input :taskIndex="index" :task-id="task.task.id" />
@@ -81,24 +127,13 @@
     <div v-else>
       <div v-if="loading">
         <svg
+          class="w-10 h-10 animate-spin mx-auto text-gray-500"
           width="24"
           height="24"
-          class="w-10 h-10 animate-spin mx-auto text-gray-500"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path
-            opacity="0.2"
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-            fill="currentColor"
-          />
-          <path
-            d="M12 22C17.5228 22 22 17.5228 22 12H19C19 15.866 15.866 19 12 19V22Z"
-            fill="currentColor"
-          />
           <path
             d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z"
             fill="currentColor"
@@ -108,107 +143,134 @@
       <div v-else>
         <div
           v-if="store.dir === 'rtl'"
-          class="text-gray-500 font-vazir text-xl lg:text-3xl font-bold text-center my-5"
-        >تسکی که میخوای رو اضافه کن!</div>
+          class="
+            text-gray-500
+            font-vazir
+            text-xl
+            lg:text-3xl
+            font-bold
+            text-center
+            my-5
+          "
+        >
+          تسکی که میخوای رو اضافه کن!
+        </div>
         <div
           v-else
-          class="text-gray-500 font-semibold text-xl lg:text-3xl text-center my-5"
-        >Add a task!</div>
+          class="
+            text-gray-500
+            font-semibold
+            text-xl
+            lg:text-3xl
+            text-center
+            my-5
+          "
+        >
+          Add a task!
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, defineComponent, onUnmounted, computed, onMounted } from 'vue'
-import { useTask } from '../stores/tasks'
-import Modal from './Modal.vue'
-import SubTaskInput from './SubTaskInput.vue'
-import TaskItem from './TaskItem.vue'
+import { ref, defineComponent, onUnmounted, computed, onMounted } from "vue";
+import { useTask } from "../stores/tasks";
+import Modal from "./Modal.vue";
+import SubTaskInput from "./SubTaskInput.vue";
+import TaskItem from "./TaskItem.vue";
 
 export default defineComponent({
   components: { Modal, TaskItem, SubTaskInput },
   setup() {
-    const taskStore = useTask()
+    const taskStore = useTask();
 
-    const clickedName = ref('')
+    const clickedName = ref("");
 
-    const descriptionValue = ref('')
-    const taskDescriptionIndex = ref(-1)
-    const descriptionModalText = ref(null)
-    const timer = ref(null)
-    const modalRef = ref(null)
+    const descriptionValue = ref("");
+    const taskDescriptionIndex = ref(-1);
+    const descriptionModalText = ref(null);
+    const timer = ref(null);
+    const modalRef = ref(null);
     const loading = ref(false);
 
     const saveDescriptionHandler = () => {
-      taskStore.addDescription(descriptionValue.value, taskDescriptionIndex.value)
-      cancelHandler()
-    }
+      taskStore.addDescription(
+        descriptionValue.value,
+        taskDescriptionIndex.value
+      );
+      cancelHandler();
+    };
 
     onMounted(async () => {
       loading.value = true;
       await taskStore.getTodayTasks();
       await taskStore.getTasksNames();
       await taskStore.getSubtasksNames();
-      loading.value = false
-    })
+      loading.value = false;
+    });
 
     onUnmounted(() => {
-      window.clearTimeout(timer.value)
-    })
+      window.clearTimeout(timer.value);
+    });
 
     const descriptionModalOpenHandler = (task, index) => {
-      taskStore.showDescriptionModal = true
-      descriptionValue.value = task.description.text
-      taskDescriptionIndex.value = index
+      taskStore.showDescriptionModal = true;
+      descriptionValue.value = task.description.text;
+      taskDescriptionIndex.value = index;
       timer.value = setTimeout(() => {
-        console.log(descriptionModalText.value)
-        descriptionModalText.value.focus()
-      }, 100)
-    }
+        console.log(descriptionModalText.value);
+        descriptionModalText.value.focus();
+      }, 100);
+    };
 
     const cancelHandler = () => {
-      taskStore.showDescriptionModal = false
-      descriptionValue.value = ''
-      taskDescriptionIndex.value = -1
-    }
+      taskStore.showDescriptionModal = false;
+      descriptionValue.value = "";
+      taskDescriptionIndex.value = -1;
+    };
 
     const classNames = (index) => {
       let classNames = "";
-      const background = index % 2 === 0
-        ? " bg-gray-50"
-        : " bg-white";
+      const background = index % 2 === 0 ? " bg-gray-50" : " bg-white";
       classNames = classNames + background;
-      if (taskStore.currentIndex === index && taskStore.tasks[index].isTicking) {
+      if (
+        taskStore.currentIndex === index &&
+        taskStore.tasks[index].isTicking
+      ) {
         classNames = classNames + " bg-green-100";
       }
       if (taskStore.selectedTaskIndex === index) {
         const selected = " !ring-2 ring-purple-300";
         classNames = classNames + selected;
       } else {
-        const ringColor = index % 2 === 0 ? " ring-2 ring-gray-50" : " ring-2 ring-white";
+        const ringColor =
+          index % 2 === 0 ? " ring-2 ring-gray-50" : " ring-2 ring-white";
         classNames = classNames + ringColor;
       }
       return classNames;
-    }
+    };
 
     const clickCreateSubTaskHandler = (id, index) => {
-      const { task } = taskStore.tasks.find(task => task.task.id === id)
-      task.showSubTaskInput = true
+      const { task } = taskStore.tasks.find((task) => task.task.id === id);
+      task.showSubTaskInput = true;
       taskStore.tasks.map((task, idx) => {
         if (idx !== index) {
-          task.task.showSubTaskInput = false
+          task.task.showSubTaskInput = false;
         }
-      })
-    }
+      });
+    };
 
     const createSubTask = async (id) => {
-      await tasksApi.createTask({ title: taskName.value, parentId: id }).then(res => {
-        console.log(res)
-      }).catch(err => {
-        console.log(err)
-      });
-    }
+      await tasksApi
+        .createTask({ title: taskName.value, parentId: id })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
 
     return {
       store: taskStore,
@@ -222,8 +284,8 @@ export default defineComponent({
       modalRef,
       loading,
       createSubTask,
-      clickCreateSubTaskHandler
-    }
-  }
-})
+      clickCreateSubTaskHandler,
+    };
+  },
+});
 </script>

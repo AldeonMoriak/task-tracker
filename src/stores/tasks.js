@@ -13,7 +13,7 @@ export const useTask = defineStore({
     subtasksNames: [],
     tasks: [],
     isCheckedIn: false,
-    userName: '',
+    userName: "",
     dir: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).dir
       : "rtl",
@@ -28,7 +28,7 @@ export const useTask = defineStore({
       : false,
     showDescriptionModal: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore"))
-        .showDescriptionModal
+          .showDescriptionModal
       : false,
     whichKeyIsPressed: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).whichKeyIsPressed
@@ -40,7 +40,7 @@ export const useTask = defineStore({
       window.localStorage.getItem("taskStore")
     )
       ? JSON.parse(window.localStorage.getItem("taskStore"))
-        .aboutToChangeNameTaskIndex
+          .aboutToChangeNameTaskIndex
       : -1,
     totalTime: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).totalTime
@@ -52,7 +52,7 @@ export const useTask = defineStore({
   // optional getters
   getters: {
     getTaskNameIndex: (state) => state.aboutToChangeNameTaskIndex,
-    isTicking: (state) => state.tasks.some((task) => task.isTicking),
+    isTicking: (state) => state.tasks.some((task) => task.task.isTicking),
     tasksLength: (state) => state.tasks.length,
     isAuthenticated: (state) => !!state.token,
   },
@@ -70,6 +70,7 @@ export const useTask = defineStore({
           };
           object.task.totalTime = "00:00:00";
           object.task.showSubTaskInput = false;
+          let subTimes = 0;
           object.subTasks.map((sub, index) => {
             sub.loading = false;
             sub.description = {
@@ -77,7 +78,10 @@ export const useTask = defineStore({
               text: sub.description,
             };
             sub.totalTime = "00:00:00";
+            subTimes = subTimes + this.getTaskMilliSeconds(sub);
+            sub.totalTime = this.toStringTime(this.getTaskMilliSeconds(sub));
           });
+          object.task.totalTime = this.toStringTime(subTimes + this.getTaskMilliSeconds(object.task));
         });
         this.tasks = tasks;
       });
@@ -96,10 +100,10 @@ export const useTask = defineStore({
       return tasksApi.check();
     },
     async getUserInfo() {
-      return tasksApi.getUserInfo().then(res => {
+      return tasksApi.getUserInfo().then((res) => {
         this.userName = res.data.name;
-        this.isCheckedIn = res.data.isCheckedIn
-      })
+        this.isCheckedIn = res.data.isCheckedIn;
+      });
     },
     addTask(value) {
       if (!value.trim() || value.trim().length < 1) {
@@ -122,56 +126,64 @@ export const useTask = defineStore({
     async toggleTask(id, parentTaskId) {
       let parentTask = null;
       let childTask = null;
-      if (parentTaskId) parentTask = this.tasks.find(task => task.task.id === parentTaskId)
-      else parentTask = this.tasks.find(task => task.task.id === id);
+      if (parentTaskId)
+        parentTask = this.tasks.find((task) => task.task.id === parentTaskId);
+      else parentTask = this.tasks.find((task) => task.task.id === id);
       if (parentTaskId) {
-        childTask = parentTask.subTasks.find(subTask => subTask.id === id);
+        childTask = parentTask.subTasks.find((subTask) => subTask.id === id);
         childTask.loading = true;
       }
       parentTask.task.loading = true;
-      const error = await tasksApi.addTimeToTask(id).then((res) => {
-        if (res.status < 300) {
-          parentTask.task.loading = false;
-          if (parentTaskId) {
-            const tickingSubTask = parentTask.subTasks.find((subTask) => subTask.id !== id && subTask.isTicking);
-            // if there is a task and a ticking subtask just change the ticking state of subtask
-            childTask.isTicking = !childTask.isTicking
-            if (tickingSubTask) {
-              tickingSubTask.loading = true;
-              tasksApi.addTimeToTask(tickingSubTask.id).then(res => {
-                tickingSubTask.loading = false;
-                tickingSubTask.isTicking = !tickingSubTask.isTicking
+      const error = await tasksApi
+        .addTimeToTask(id)
+        .then((res) => {
+          if (res.status < 300) {
+            parentTask.task.loading = false;
+            if (parentTaskId) {
+              const tickingSubTask = parentTask.subTasks.find(
+                (subTask) => subTask.id !== id && subTask.isTicking
+              );
+              // if there is a task and a ticking subtask just change the ticking state of subtask
+              childTask.isTicking = !childTask.isTicking;
+              if (tickingSubTask) {
+                tickingSubTask.loading = true;
+                tasksApi.addTimeToTask(tickingSubTask.id).then((res) => {
+                  tickingSubTask.loading = false;
+                  tickingSubTask.isTicking = !tickingSubTask.isTicking;
+                  childTask.loading = false;
+                });
+              } else if (parentTask.task.isTicking) {
                 childTask.loading = false;
-              });
-            } else if (parentTask.task.isTicking) {
-              childTask.loading = false;
-              parentTask.task.loading = false;
+                parentTask.task.loading = false;
+              } else {
+                childTask.loading = false;
+                parentTask.task.isTicking = !parentTask.task.isTicking;
+                parentTask.task.loading = false;
+                //parentTask.task.loading = !parentTask.task.loading
+              }
             } else {
-              childTask.loading = false;
-              parentTask.task.isTicking = !parentTask.task.isTicking;
-              parentTask.task.loading = false;
-              //parentTask.task.loading = !parentTask.task.loading
+              const tickingSubTask = parentTask.subTasks.find(
+                (subTask) => subTask.isTicking
+              );
+              if (tickingSubTask) {
+                this.toggleTask(tickingSubTask.id, parentTask.task.id);
+              } else {
+                parentTask.task.isTicking = !parentTask.task.isTicking;
+                parentTask.task.loading = false;
+              }
             }
           } else {
-            const tickingSubTask = parentTask.subTasks.find(subTask => subTask.isTicking);
-            if (tickingSubTask) {
-              this.toggleTask(tickingSubTask.id, parentTask.task.id)
-            } else {
-              parentTask.task.isTicking = !parentTask.task.isTicking
-              parentTask.task.loading = false;
-            }
+            return { message: res.data.message, type: "error" };
           }
-        } else {
-          return { message: res.data.message, type: 'error' }
-        }
-      }).catch(err => {
-        console.log(error);
-      }).finally(() => {
-        parentTask.task.loading = false;
-        if (childTask)
-          childTask.loading = false;
-      });
-      if (error) return error
+        })
+        .catch((err) => {
+          console.log(error);
+        })
+        .finally(() => {
+          parentTask.task.loading = false;
+          if (childTask) childTask.loading = false;
+        });
+      if (error) return error;
     },
     counter(index) {
       this.timer = setInterval(() => {
@@ -251,6 +263,17 @@ export const useTask = defineStore({
           (task, index) => (totalTime = totalTime + this.taskTotalTime(index))
         );
       this.totalTime = this.toStringTime(totalTime);
+    },
+    getTaskMilliSeconds(task) {
+      let time = 0;
+      task.date.map((d) => {
+        if (!d.isBeginning) {
+          time = time + new Date(d.date).getTime();
+        } else {
+          time = time - new Date(d.date).getTime();
+        }
+      });
+      return time;
     },
   },
 });
