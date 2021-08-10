@@ -1,106 +1,110 @@
 <template>
   <div ref="target" class="relative flex mt-4 mb-24 items-center font-vazir z-10">
-    <div class="relative w-full flex flex-col items-center justify-center">
-      <div class="max-w-24rem absolute top-0 w-full">
-        <div class="flex">
-          <input
-            type="text"
-            ref="taskInput"
-            v-model="newTaskName"
-            :placeholder="store.dir === 'rtl' ? 'عنوان تسک ثانویه' : 'Enter a subtask...'"
-            @focus="focusHandler"
-            class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full font-vazir font-bold-body-weight flex py-2 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400 focus:(ring-1 ring-blue-300) disabled:(bg-gray-100 cursor-wait)"
-            :disabled="loading"
-            @keypress.enter="insertTaskHandler"
-          />
-          <div
-            class="absolute top-0 p-2"
-            :class="{ 'left-0': store.dir === 'rtl', 'right-0': store.dir === 'ltr' }"
-          >
-            <button
-              v-show="newTaskName && isFocused && !loading"
-              type="button"
-              class="focus:outline-none bg-gray-50 border-2 text-green-400 border-white rounded-2xl px-2 py-1 hover:text-green-700"
-              @click="insertTaskHandler"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                class="w-5 h-5"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 4C11.4477 4 11 4.44772 11 5V11H5C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13H11V19C11 19.5523 11.4477 20 12 20C12.5523 20 13 19.5523 13 19V13H19C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11H13V5C13 4.44772 12.5523 4 12 4Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </button>
+    <div class="relative w-full">
+      <div class="relative w-full flex flex-col items-center justify-center">
+        <div class="max-w-24rem absolute top-0 w-full">
+          <div class="flex">
+            <input
+              type="text"
+              ref="taskInput"
+              v-model="newTaskName"
+              :placeholder="store.dir === 'rtl' ? 'عنوان تسک ثانویه' : 'Enter a subtask...'"
+              @focus="focusHandler"
+              class="block resize-none overflow-hidden w-full bg-white focus:outline-none w-full font-vazir font-bold-body-weight flex py-2 px-8 rounded-xl border-2 border-transparent text-gray-900 transition-colors duration-200 placeholder-gray-400 focus:(ring-1 ring-blue-300) disabled:(bg-gray-100 cursor-wait)"
+              :disabled="loading"
+              @keypress.enter="insertTaskHandler"
+            />
             <div
-              v-if="loading"
-              class="bg-gray-50 border-2 text-gray-400 border-white rounded-2xl px-2 py-1"
+              class="absolute top-0 p-2"
+              :class="{ 'left-0': store.dir === 'rtl', 'right-0': store.dir === 'ltr' }"
             >
-              <svg
-                class="w-5 h-5 animate-spin"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+              <button
+                v-show="newTaskName && isFocused && !loading"
+                type="button"
+                class="focus:outline-none bg-gray-50 border-2 text-green-400 border-white rounded-2xl px-2 py-1 hover:text-green-700"
+                @click="insertTaskHandler"
               >
-                <path
-                  opacity="0.2"
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M12 22C17.5228 22 22 17.5228 22 12H19C19 15.866 15.866 19 12 19V22Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z"
-                  fill="currentColor"
-                />
-              </svg>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  class="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 4C11.4477 4 11 4.44772 11 5V11H5C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13H11V19C11 19.5523 11.4477 20 12 20C12.5523 20 13 19.5523 13 19V13H19C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11H13V5C13 4.44772 12.5523 4 12 4Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+              <div
+                v-if="loading"
+                class="bg-gray-50 border-2 text-gray-400 border-white rounded-2xl px-2 py-1"
+              >
+                <svg
+                  class="w-5 h-5 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    opacity="0.2"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M12 22C17.5228 22 22 17.5228 22 12H19C19 15.866 15.866 19 12 19V22Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div
-        class="absolute flex justify-center mt-24 w-full max-w-24rem"
-        v-if="isFocused && names.length > 0"
-      >
-        <ul
-          class="absolute z-10 w-full bg-white shadow-lg rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm max-w-24rem mx-auto flex justify-center flex-col"
-          tabindex="-1"
-          role="listbox"
-          aria-labelledby="listbox-label"
-          aria-activedescendant="listbox-option-3"
+      <div class="max-w-24rem mx-auto">
+        <div
+          class="absolute w-full max-w-24rem mx-auto max-h-64 overflow-y-auto bg-white shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 focus:outline-none mt-12"
+          v-if="isFocused && names.length > 0"
         >
-          <!--
+          <ul
+            class="w-full text-base sm:text-sm flex justify-center flex-col"
+            tabindex="-1"
+            role="listbox"
+            aria-labelledby="listbox-label"
+            aria-activedescendant="listbox-option-3"
+          >
+            <!--
         Select option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation.
 
         Highlighted: "text-white bg-indigo-600", Not Highlighted: "text-gray-900"
-          -->
-          <li
-            class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:(text-indigo-900 bg-indigo-200)"
-            id="listbox-option-0"
-            role="option"
-            v-for="task in names"
-            :key="task.id"
-            @click="clickNameHandler(task)"
-          >
-            <div class="flex items-center">
-              <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
-              <span class="font-normal ml-3 block truncate">{{ task.title }}</span>
-            </div>
+            -->
+            <li
+              class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:(text-indigo-900 bg-indigo-200)"
+              id="listbox-option-0"
+              role="option"
+              v-for="task in names"
+              :key="task.id"
+              @click="clickNameHandler(task)"
+            >
+              <div class="flex items-center">
+                <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
+                <span class="font-normal ml-3 block truncate">{{ task.title }}</span>
+              </div>
 
-            <!--
+              <!--
           Checkmark, only display for selected option.
 
           Highlighted: "text-white", Not Highlighted: "text-indigo-600"
-            -->
-          </li>
-        </ul>
+              -->
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

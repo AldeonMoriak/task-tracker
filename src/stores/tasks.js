@@ -55,6 +55,7 @@ export const useTask = defineStore({
     isTicking: (state) => state.tasks.some((task) => task.task.isTicking),
     tasksLength: (state) => state.tasks.length,
     isAuthenticated: (state) => !!state.token,
+    tickingTask: (state) => state.tasks.find((task) => task.task.isTicking),
   },
   // optional actions
   actions: {
@@ -72,6 +73,7 @@ export const useTask = defineStore({
           object.task.showSubTaskInput = false;
           let subTimes = 0;
           object.subTasks.map((sub, index) => {
+            if(sub.isTicking) object.task.isTicking = true
             sub.loading = false;
             sub.description = {
               isShown: false,
@@ -140,6 +142,7 @@ export const useTask = defineStore({
           if (res.status < 300) {
             parentTask.task.loading = false;
             if (parentTaskId) {
+              childTask.date.push(res.data.date)
               const tickingSubTask = parentTask.subTasks.find(
                 (subTask) => subTask.id !== id && subTask.isTicking
               );
@@ -151,6 +154,7 @@ export const useTask = defineStore({
                   tickingSubTask.loading = false;
                   tickingSubTask.isTicking = !tickingSubTask.isTicking;
                   childTask.loading = false;
+                  tickingSubTask.date.push(res.data.date);
                 });
               } else if (parentTask.task.isTicking) {
                 childTask.loading = false;
@@ -162,6 +166,7 @@ export const useTask = defineStore({
                 //parentTask.task.loading = !parentTask.task.loading
               }
             } else {
+              parentTask.task.date.push(res.data.date)
               const tickingSubTask = parentTask.subTasks.find(
                 (subTask) => subTask.isTicking
               );
@@ -260,7 +265,7 @@ export const useTask = defineStore({
       let totalTime = 0;
       if (this.tasks)
         this.tasks.map(
-          (task, index) => (totalTime = totalTime + this.taskTotalTime(index))
+          (task, index) => (totalTime = totalTime + this.getTaskMilliSeconds(task.task))
         );
       this.totalTime = this.toStringTime(totalTime);
     },

@@ -11,33 +11,10 @@
         ></div>
         <div
           v-if="store.showDescriptionModal"
-          class="
-            modal
-            font-vazir
-            absolute
-            top-0
-            right-0
-            bottom-0
-            left-0
-            flex flex-col
-            items-center
-            justify-center
-          "
+          class="modal font-vazir absolute top-0 right-0 bottom-0 left-0 flex flex-col items-center justify-center"
         >
           <div
-            class="
-              flex flex-col
-              items-center
-              justify-center
-              p-5
-              w-72
-              h-72
-              rounded-md
-              bg-white
-              min-w-max
-              max-w-md
-              h-1/3
-            "
+            class="flex flex-col items-center justify-center p-5 w-72 h-72 rounded-md bg-white min-w-max max-w-md h-1/3"
           >
             <textarea
               :dir="store.dir"
@@ -50,34 +27,13 @@
               <button
                 type="button"
                 @click="saveDescriptionHandler"
-                class="
-                  rounded-md
-                  bg-green-200
-                  text-green-800
-                  px-2
-                  py-1
-                  hover:(bg-green-300
-                  text-green-900)
-                "
-              >
-                {{ store.dir === "rtl" ? "ثبت" : "Save" }}
-              </button>
+                class="rounded-md bg-green-200 text-green-800 px-2 py-1 hover:(bg-green-300 text-green-900)"
+              >{{ store.dir === "rtl" ? "ثبت" : "Save" }}</button>
               <button
                 type="button"
                 @click="cancelHandler"
-                class="
-                  mx-2
-                  rounded-md
-                  bg-red-200
-                  text-red-800
-                  px-2
-                  py-1
-                  hover:(bg-red-300
-                  text-red-900)
-                "
-              >
-                {{ store.dir === "rtl" ? "بازگشت" : "Cancel" }}
-              </button>
+                class="mx-2 rounded-md bg-red-200 text-red-800 px-2 py-1 hover:(bg-red-300 text-red-900)"
+              >{{ store.dir === "rtl" ? "بازگشت" : "Cancel" }}</button>
             </div>
           </div>
         </div>
@@ -113,9 +69,7 @@
                   />
                 </svg>
               </div>
-              <p>
-                {{ store.dir === "rtl" ? "ایجاد تسک" : "Create a subtask" }}
-              </p>
+              <p>{{ store.dir === "rtl" ? "ایجاد تسک" : "Create a subtask" }}</p>
             </div>
             <div v-else>
               <sub-task-input :taskIndex="index" :task-id="task.task.id" />
@@ -143,42 +97,24 @@
       <div v-else>
         <div
           v-if="store.dir === 'rtl'"
-          class="
-            text-gray-500
-            font-vazir
-            text-xl
-            lg:text-3xl
-            font-bold
-            text-center
-            my-5
-          "
-        >
-          تسکی که میخوای رو اضافه کن!
-        </div>
+          class="text-gray-500 font-vazir text-xl lg:text-3xl font-bold text-center my-5"
+        >تسکی که میخوای رو اضافه کن!</div>
         <div
           v-else
-          class="
-            text-gray-500
-            font-semibold
-            text-xl
-            lg:text-3xl
-            text-center
-            my-5
-          "
-        >
-          Add a task!
-        </div>
+          class="text-gray-500 font-semibold text-xl lg:text-3xl text-center my-5"
+        >Add a task!</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, defineComponent, onUnmounted, computed, onMounted } from "vue";
+import { ref, defineComponent, onUnmounted, computed, onMounted, watch } from "vue";
 import { useTask } from "../stores/tasks";
 import Modal from "./Modal.vue";
 import SubTaskInput from "./SubTaskInput.vue";
 import TaskItem from "./TaskItem.vue";
+import { useTimestamp, useIntervalFn } from '@vueuse/core'
 
 export default defineComponent({
   components: { Modal, TaskItem, SubTaskInput },
@@ -193,6 +129,9 @@ export default defineComponent({
     const timer = ref(null);
     const modalRef = ref(null);
     const loading = ref(false);
+    const timestamp = useTimestamp({ offset: 0 })
+
+
 
     const saveDescriptionHandler = () => {
       taskStore.addDescription(
@@ -201,6 +140,28 @@ export default defineComponent({
       );
       cancelHandler();
     };
+
+
+    watch(() => taskStore.tickingTask, value => {
+      if (value && value.task) {
+        resume();
+      } else {
+        pause();
+      }
+    })
+
+    const { pause, resume, isActive } = useIntervalFn(() => {
+      if (taskStore.tickingTask) {
+
+        const subTask = taskStore.tickingTask.subTasks.find(subTask => subTask.isTicking)
+        if (subTask) {
+          subTask.totalTime = taskStore.toStringTime(timestamp.value + taskStore.getTaskMilliSeconds(subTask))
+        }
+        taskStore.tickingTask.task.totalTime = taskStore.toStringTime(timestamp.value + taskStore.getTaskMilliSeconds(taskStore.tickingTask.task))
+      }
+    }, 900)
+
+
 
     onMounted(async () => {
       loading.value = true;
