@@ -1,9 +1,9 @@
 import axios from "axios";
 import { vModelCheckbox } from "vue-demi";
 
-const BASE_URL = "http://backend-task-tracker.herokuapp.com/tasks/";
+// const BASE_URL = "http://backend-task-tracker.herokuapp.com/tasks/";
 
-// const BASE_URL = 'http://localhost:6000/tasks/'
+const BASE_URL = 'http://localhost:5000/tasks/'
 const instance = axios.create({
   baseURL: BASE_URL,
   validateStatus: function (status) {

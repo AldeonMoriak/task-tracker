@@ -115,6 +115,7 @@
         </div>
       </div>
     </div>
+    <Alert :type="alertType" :message="alertMessage" v-if="showAlert" />
   </div>
 </template>
 <script>
@@ -122,8 +123,11 @@ import { defineComponent, onDeactivated, ref, computed } from 'vue'
 import { useTask } from '../stores/tasks'
 import tasksApi from '../api/tasksApi'
 import { onClickOutside } from '@vueuse/core'
+import useError from '../composables/useError'
+import Alert from './Alert.vue'
 
 export default defineComponent({
+  components: { Alert },
   setup() {
     const newTaskName = ref('')
     const store = useTask()
@@ -132,6 +136,8 @@ export default defineComponent({
     const loading = ref(false);
     const timer = ref(null)
     const target = ref(null)
+
+    const { showError, alertType, alertMessage, showAlert } = useError();
 
     onClickOutside(target, () => blurHandler());
 
@@ -170,12 +176,16 @@ export default defineComponent({
       if (candidate) id = candidate.id
       loading.value = true;
       await tasksApi.createTask({ title: newTaskName.value, parentId: null, id }).then(res => {
-        console.log(res)
-        loading.value = false
-        newTaskName.value = "";
-        store.isFocused = false;
-        store.getTasksNames();
-        store.getTodayTasks();
+        if (res.status < 300) {
+          loading.value = false
+          newTaskName.value = "";
+          store.isFocused = false;
+          store.getTasksNames();
+          store.getTodayTasks();
+        } else {
+          showError({ type: 'error', message: res.data.message });
+          loading.value = false
+        }
       }).catch(err => {
         loading.value = false
       })
@@ -193,7 +203,10 @@ export default defineComponent({
       loading,
       names,
       clickNameHandler,
-      target
+      target,
+      showAlert,
+      alertType,
+      alertMessage
     }
   },
 });

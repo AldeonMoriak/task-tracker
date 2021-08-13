@@ -128,9 +128,12 @@ export const useTask = defineStore({
     async toggleTask(id, parentTaskId) {
       let parentTask = null;
       let childTask = null;
+      // if there is a parentId populate it with parent task
       if (parentTaskId)
         parentTask = this.tasks.find((task) => task.task.id === parentTaskId);
+      // if there isn't a parentId then populate it with the actual task
       else parentTask = this.tasks.find((task) => task.task.id === id);
+      // if there is a parent id populate the child task
       if (parentTaskId) {
         childTask = parentTask.subTasks.find((subTask) => subTask.id === id);
         childTask.loading = true;
@@ -147,12 +150,12 @@ export const useTask = defineStore({
                 (subTask) => subTask.id !== id && subTask.isTicking
               );
               // if there is a task and a ticking subtask just change the ticking state of subtask
-              childTask.isTicking = !childTask.isTicking;
+              childTask.isTicking = res.data.date.isBeginning;
               if (tickingSubTask) {
                 tickingSubTask.loading = true;
                 tasksApi.addTimeToTask(tickingSubTask.id).then((res) => {
                   tickingSubTask.loading = false;
-                  tickingSubTask.isTicking = !tickingSubTask.isTicking;
+                  tickingSubTask.isTicking = res.data.date.isBeginning;
                   childTask.loading = false;
                   tickingSubTask.date.push(res.data.date);
                 });
@@ -170,11 +173,17 @@ export const useTask = defineStore({
               const tickingSubTask = parentTask.subTasks.find(
                 (subTask) => subTask.isTicking
               );
+              const tickingTask = this.tasks.find(task => 
+                task.task.id !== parentTask.task.id && task.task.isTicking
+              )
               if (tickingSubTask) {
                 this.toggleTask(tickingSubTask.id, parentTask.task.id);
               } else {
-                parentTask.task.isTicking = !parentTask.task.isTicking;
                 parentTask.task.loading = false;
+                if(tickingTask) {
+                  this.toggleTask(tickingTask.task.id, false);
+                  parentTask.task.isTicking = res.data.date.isBeginning;
+                }
               }
             }
           } else {
@@ -182,7 +191,7 @@ export const useTask = defineStore({
           }
         })
         .catch((err) => {
-          console.log(error);
+          console.log(err);
         })
         .finally(() => {
           parentTask.task.loading = false;
