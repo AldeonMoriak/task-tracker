@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-// const BASE_URL = 'http://backend-task-tracker.herokuapp.com/auth/'
+const BASE_URL = 'http://backend-task-tracker.herokuapp.com/auth/'
 
 
-const BASE_URL = 'http://localhost:5000/auth/'
+// const BASE_URL = 'http://localhost:5000/auth/'
 const instance = axios.create({
     baseURL: BASE_URL,
     validateStatus: function (status) {

@@ -134,7 +134,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    console.log(props.subtasks)
     const store = useTask();
     const alertType = ref('')
     const alertMessage = ref('')

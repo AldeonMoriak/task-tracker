@@ -142,8 +142,8 @@ export default defineComponent({
     };
 
 
-    watch(() => taskStore.tickingTask, value => {
-      if (value && value.task) {
+    watch(() => taskStore.isTicking, value => {
+      if (value) {
         resume();
       } else {
         pause();
@@ -151,15 +151,20 @@ export default defineComponent({
     })
 
     const { pause, resume, isActive } = useIntervalFn(() => {
-      if (taskStore.tickingTask) {
-
-        const subTask = taskStore.tickingTask.subTasks.find(subTask => subTask.isTicking)
+      if (taskStore.isTicking) {
+        const mainTask = taskStore.tickingTask ?? taskStore.tasks.find(task => task.subTasks.find(subTask => subTask.isTicking));
+        const subTask = mainTask.subTasks?.find(subTask => subTask.isTicking)
         if (subTask) {
-          subTask.totalTime = taskStore.toStringTime(timestamp.value + taskStore.getTaskMilliSeconds(subTask))
+          const time = timestamp.value + taskStore.getTaskMilliSeconds(subTask);
+          subTask.totalTime = taskStore.toStringTime(time)
+          mainTask.task.totalTime = taskStore.toStringTime(taskStore.getSubTasksTime(mainTask) + taskStore.getTaskMilliSeconds(mainTask.task))
+          taskStore.calculateTotalTime({ value: 0 });
+        } else {
+          mainTask.task.totalTime = taskStore.toStringTime(timestamp.value + taskStore.getTaskMilliSeconds(mainTask.task) + taskStore.getSubTasksTime(mainTask))
+          taskStore.calculateTotalTime(timestamp);
         }
-        taskStore.tickingTask.task.totalTime = taskStore.toStringTime(timestamp.value + taskStore.getTaskMilliSeconds(taskStore.tickingTask.task))
       }
-    }, 900)
+    }, 800)
 
 
 
@@ -180,7 +185,6 @@ export default defineComponent({
       descriptionValue.value = task.description.text;
       taskDescriptionIndex.value = index;
       timer.value = setTimeout(() => {
-        console.log(descriptionModalText.value);
         descriptionModalText.value.focus();
       }, 100);
     };

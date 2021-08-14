@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import tasksApi from "../api/tasksApi";
+import { toIsoString } from "../utils/toIsoDate";
 
 export const useTask = defineStore({
   // name of the store
@@ -42,9 +43,7 @@ export const useTask = defineStore({
       ? JSON.parse(window.localStorage.getItem("taskStore"))
           .aboutToChangeNameTaskIndex
       : -1,
-    totalTime: JSON.parse(window.localStorage.getItem("taskStore"))
-      ? JSON.parse(window.localStorage.getItem("taskStore")).totalTime
-      : "00:00:00",
+    totalTime: "00:00:00",
     timer: JSON.parse(window.localStorage.getItem("taskStore"))
       ? JSON.parse(window.localStorage.getItem("taskStore")).timer
       : null,
@@ -52,7 +51,12 @@ export const useTask = defineStore({
   // optional getters
   getters: {
     getTaskNameIndex: (state) => state.aboutToChangeNameTaskIndex,
-    isTicking: (state) => state.tasks.some((task) => task.task.isTicking),
+    isTicking: (state) =>
+      state.tasks.some(
+        (task) =>
+          task.task.isTicking ||
+          task.subTasks.some((subTask) => subTask.isTicking)
+      ),
     tasksLength: (state) => state.tasks.length,
     isAuthenticated: (state) => !!state.token,
     tickingTask: (state) => state.tasks.find((task) => task.task.isTicking),
@@ -61,7 +65,6 @@ export const useTask = defineStore({
   actions: {
     async getTodayTasks() {
       await tasksApi.getTodayTasks().then((res) => {
-        console.log(res);
         let tasks = JSON.parse(JSON.stringify(res.data));
         tasks.map((object, index) => {
           object.task.loading = false;
@@ -71,22 +74,34 @@ export const useTask = defineStore({
           };
           object.task.totalTime = "00:00:00";
           object.task.showSubTaskInput = false;
-          let subTimes = 0;
           object.subTasks.map((sub, index) => {
-            if(sub.isTicking) object.task.isTicking = true
             sub.loading = false;
             sub.description = {
               isShown: false,
               text: sub.description,
             };
             sub.totalTime = "00:00:00";
-            subTimes = subTimes + this.getTaskMilliSeconds(sub);
             sub.totalTime = this.toStringTime(this.getTaskMilliSeconds(sub));
           });
-          object.task.totalTime = this.toStringTime(subTimes + this.getTaskMilliSeconds(object.task));
+          object.task.totalTime = this.toStringTime(
+            this.getSubTasksTime(object) + this.getTaskMilliSeconds(object.task)
+          );
         });
         this.tasks = tasks;
+        this.calculateTotalTime({value: 0})
       });
+    },
+    getSubTasksTime(task) {
+      let subTimes = 0;
+      task.subTasks.map((sub, index) => {
+        if (!sub.isTicking) subTimes = subTimes + this.getTaskMilliSeconds(sub);
+        else {
+          let subTask = JSON.parse(JSON.stringify(sub))
+          subTask.date.push({ date: toIsoString(new Date()), isBeginning: false })
+          subTimes = subTimes + this.getTaskMilliSeconds(subTask)
+        }
+      });
+      return subTimes;
     },
     async getTasksNames() {
       await tasksApi.getTasksNames().then((res) => {
@@ -125,78 +140,85 @@ export const useTask = defineStore({
     addDescription(value, index) {
       this.tasks[index].description.text = value;
     },
-    async toggleTask(id, parentTaskId) {
-      let parentTask = null;
-      let childTask = null;
-      // if there is a parentId populate it with parent task
-      if (parentTaskId)
-        parentTask = this.tasks.find((task) => task.task.id === parentTaskId);
-      // if there isn't a parentId then populate it with the actual task
-      else parentTask = this.tasks.find((task) => task.task.id === id);
-      // if there is a parent id populate the child task
-      if (parentTaskId) {
-        childTask = parentTask.subTasks.find((subTask) => subTask.id === id);
-        childTask.loading = true;
-      }
-      parentTask.task.loading = true;
+    async _toggleMainTask(task) {
+      task.task.loading = true;
       const error = await tasksApi
-        .addTimeToTask(id)
+        .addTimeToTask(task.task.id)
         .then((res) => {
           if (res.status < 300) {
-            parentTask.task.loading = false;
-            if (parentTaskId) {
-              childTask.date.push(res.data.date)
-              const tickingSubTask = parentTask.subTasks.find(
-                (subTask) => subTask.id !== id && subTask.isTicking
-              );
-              // if there is a task and a ticking subtask just change the ticking state of subtask
-              childTask.isTicking = res.data.date.isBeginning;
-              if (tickingSubTask) {
-                tickingSubTask.loading = true;
-                tasksApi.addTimeToTask(tickingSubTask.id).then((res) => {
-                  tickingSubTask.loading = false;
-                  tickingSubTask.isTicking = res.data.date.isBeginning;
-                  childTask.loading = false;
-                  tickingSubTask.date.push(res.data.date);
-                });
-              } else if (parentTask.task.isTicking) {
-                childTask.loading = false;
-                parentTask.task.loading = false;
-              } else {
-                childTask.loading = false;
-                parentTask.task.isTicking = !parentTask.task.isTicking;
-                parentTask.task.loading = false;
-                //parentTask.task.loading = !parentTask.task.loading
-              }
-            } else {
-              parentTask.task.date.push(res.data.date)
-              const tickingSubTask = parentTask.subTasks.find(
-                (subTask) => subTask.isTicking
-              );
-              const tickingTask = this.tasks.find(task => 
-                task.task.id !== parentTask.task.id && task.task.isTicking
-              )
-              if (tickingSubTask) {
-                this.toggleTask(tickingSubTask.id, parentTask.task.id);
-              } else {
-                parentTask.task.loading = false;
-                if(tickingTask) {
-                  this.toggleTask(tickingTask.task.id, false);
-                  parentTask.task.isTicking = res.data.date.isBeginning;
-                }
-              }
+            task.task.date.push(res.data.date);
+            // const tickingSubTask = parentTask.subTasks.find(
+            //   (subTask) => subTask.isTicking
+            // );
+            task.task.isTicking = res.data.date.isBeginning;
+            const tickingTask = this.tasks.find(
+              (tsk) => tsk.task.id !== task.task.id && tsk.task.isTicking
+            );
+            if (tickingTask) {
+              tickingTask.task.isTicking = false;
             }
           } else {
             return { message: res.data.message, type: "error" };
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         })
         .finally(() => {
-          parentTask.task.loading = false;
-          if (childTask) childTask.loading = false;
+          task.task.loading = false;
         });
+      if (error) {
+        return error;
+      }
+    },
+    async _toggleSubTask(subTask, mainTask) {
+      subTask.loading = true;
+      const error = await tasksApi
+        .addTimeToTask(subTask.id)
+        .then((res) => {
+          if (res.status < 300) {
+            subTask.date.push(res.data.date);
+            // const tickingSubTask = parentTask.subTasks.find(
+            //   (subTask) => subTask.isTicking
+            // );
+            subTask.isTicking = res.data.date.isBeginning;
+            const tickingSubTask = mainTask.subTasks.find(
+              (tsk) => tsk.id !== subTask.id && tsk.isTicking
+            );
+            if (tickingSubTask) {
+              tickingSubTask.isTicking = false;
+            }
+          } else {
+            return { message: res.data.message, type: "error" };
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
+          subTask.loading = false;
+        });
+      if (error) {
+        return error;
+      }
+    },
+    async toggleTask(id, parentTaskId) {
+      let error = null;
+      // if there is a parentId populate it with parent task
+      if (parentTaskId) {
+        const parentTask = this.tasks.find(
+          (task) => task.task.id === parentTaskId
+        );
+        const childTask = parentTask.subTasks.find(
+          (subTask) => subTask.id === id
+        );
+        error = this._toggleSubTask(childTask, parentTask);
+      }
+      // if there isn't a parentId then populate it with the actual task
+      else
+        error = this._toggleMainTask(
+          this.tasks.find((task) => task.task.id === id)
+        );
       if (error) return error;
     },
     counter(index) {
@@ -245,7 +267,7 @@ export const useTask = defineStore({
           this.showNameModal = false;
           this.aboutToChangeNameTaskIndex = -1;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     },
     descriptionText(task) {
       if (task.description.text) {
@@ -270,13 +292,18 @@ export const useTask = defineStore({
         this.taskTotalTime(index)
       );
     },
-    calculateTotalTime() {
+    calculateTotalTime(timestamp) {
       let totalTime = 0;
-      if (this.tasks)
+      if (this.tasks) {
         this.tasks.map(
-          (task, index) => (totalTime = totalTime + this.getTaskMilliSeconds(task.task))
+          (task, index) =>
+            (totalTime =
+              totalTime +
+              this.getSubTasksTime(task) +
+              this.getTaskMilliSeconds(task.task))
         );
-      this.totalTime = this.toStringTime(totalTime);
+      }
+      this.totalTime = this.toStringTime(totalTime + timestamp.value);
     },
     getTaskMilliSeconds(task) {
       let time = 0;
