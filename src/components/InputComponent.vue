@@ -1,5 +1,5 @@
 <template>
-  <div ref="target" class="relative flex mt-4 mb-24 items-center font-vazir z-30">
+  <div ref="target" class="relative flex mt-4 mb-24 items-center font-vazir z-10">
     <div class="relative w-full">
       <div class="max-w-24rem mx-auto">
         <div class="max-w-24rem absolute top-0 w-full">

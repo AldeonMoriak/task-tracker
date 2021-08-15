@@ -9,18 +9,21 @@ const SimpleRouter = {
   data: () => ({
     currentRoute: window.location.pathname,
     baseUrl: "localhost:6000/",
+    pageId: 0,
     //'http://backend-task-tracker.herokuapp.com/'
   }),
   computed: {},
 
   methods: {
-    changeAddress(href) {
-      this.currentRoute = href !== '/' ? "/task-tracker/" + href : '/task-tracker/';
-      window.history.pushState(
-        null,
-        this.currentRoute,
-        href !== '/' ? "/task-tracker/" + href : '/task-tracker/'
-      );
+    changeAddress(href, shouldPush = true) {
+      this.currentRoute =
+        href !== "/" ? "/task-tracker/" + href : "/task-tracker/";
+      if (shouldPush)
+        window.history.pushState(
+          {},
+          this.currentRoute,
+          href !== "/" ? "/task-tracker/" + href : "/task-tracker/"
+        );
     },
     returnCurrentComponent() {
       const matchingPage = routes[this.currentRoute].component || NotFound;
@@ -36,7 +39,7 @@ const SimpleRouter = {
 
   mounted() {
     window.addEventListener("popstate", () => {
-      this.changeAddress(window.location.pathname.split("/task-tracker/")[1]);
+      this.changeAddress(window.location.pathname.split("/task-tracker/")[1], false);
     });
   },
 

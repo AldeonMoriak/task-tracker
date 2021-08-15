@@ -1,19 +1,10 @@
 <template>
-  <div
-    :dir="store.dir"
-    :class="[store.tasks.length < 5 ? 'h-screen' : 'h-full', 'mx-auto max-w-screen-md text-center border-t-4 border-blue-300 bg-blue-50']"
-  >
-    <TotalTime />
-    <TopIcons />
-
-    <InputComponent ref="taskInput" class="w-3/4 mx-auto" />
-    <Tasks ref="tasksRef" />
-    <ReloadPrompt />
-    <BottomIcons />
-  </div>
-  <div :dir="store.dir === 'rtl' ? 'ltr' : 'rtl'" class="mx-auto max-w-screen-md text-center">
-    <CheckButton />
-  </div>
+  <main-layout>
+    <div class="relative mt-20">
+      <InputComponent ref="taskInput" class="w-3/4 mx-auto" />
+      <Tasks ref="tasksRef" />
+    </div>
+  </main-layout>
 </template>
 
 <script>
@@ -26,6 +17,7 @@ import ReloadPrompt from "../components/ReloadPrompt.vue";
 import TotalTime from "../components/TotalTime.vue";
 import { defineComponent, watch, onMounted, ref, onDeactivated } from "vue";
 import { useTask } from "../stores/tasks";
+import MainLayout from "../layouts/MainLayout.vue";
 
 export default defineComponent({
   components: {
@@ -35,7 +27,8 @@ export default defineComponent({
     TopIcons,
     ReloadPrompt,
     TotalTime,
-    CheckButton
+    CheckButton,
+    MainLayout
   },
   setup() {
     const store = useTask();
