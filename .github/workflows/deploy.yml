@@ -34,6 +34,7 @@ jobs:
           npm install
           git config --global user.name 'Github Action'
           git config --global user.email 'github@github.com'
+          git config --global hub.protocol https
           npm run build
           cd dist
           git init
