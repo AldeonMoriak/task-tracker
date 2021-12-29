@@ -37,7 +37,7 @@ jobs:
           npm run build
           cd dist
           git init
-          git add .
+          git add -A
           git commit -m 'deploy'
           git checkout -b gh-pages
           git push -f https://github.com/AldeonMoriak/task-tracker.git gh-pages
